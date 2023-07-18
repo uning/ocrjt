@@ -119,7 +119,7 @@ async function processAll() {
   const platform = args[1] || 'bd';
   const method = args[2] || 'pt';
   //const outputDir = args[3] || path.join(__dirname, 'output');
-  const outputDir = args[3] || path.join(imgdir, 'output');;
+  const outputDir = path.normalize(args[3]||path.join(imgdir, 'output')) ;
 
   const maxDepth = args[4] || 2;
 
@@ -127,9 +127,9 @@ async function processAll() {
 
 
   const fn = imgdir.replace(/\./g, '').replace(/\//g, '_');
-  let sourceDirectory = imgdir; // 指定目录的路径
-  if (!path.isAbsolute(sourceDirectory))
-    sourceDirectory = path.resolve(imgdir);
+  let sourceDir = imgdir; // 指定目录的路径
+  if (!path.isAbsolute(sourceDir))
+    sourceDir = path.resolve(imgdir);
 
   mkdirp(outputDir);
 
@@ -139,6 +139,17 @@ async function processAll() {
   const outputXlsFilePath = path.join(outputDir, fn + 'ocr.xlsx'); // 输出文件的路径
 
   const csvhead = '文件,日期,备注,下单人,手机号,地址,实付款,订单号,下单时间,商品总价,商品名,其他信息' + "\n";
+  console.log('params', {
+    platform,
+    method,
+    maxDepth,
+    outputDir,
+    outputFilePath,
+    outputXlsFilePath,
+    sourceDir,
+    processedResultFile,
+  });
+
 
   fs.writeFileSync(outputFilePath, csvhead);
   fs.writeFileSync(outputFilePath + '.err', '');
@@ -157,12 +168,11 @@ async function processAll() {
 
 
   const imageFiles = [];
-  readImageFiles(sourceDirectory, imageFiles,maxDepth);
-  console.log('procees ',sourceDirectory,': 总共 ' + imageFiles.length + ' 个文件');
+  readImageFiles(sourceDir, imageFiles,maxDepth);
+  console.log('procees ',sourceDir,': 总共 ' + imageFiles.length + ' 个文件');
   // return;
   // 遍历每个文件
   let i = 0;
-
   const wsData = [];
   wsData.push(['文件(可点击打开)', '日期','备注', '下单人', '手机号', '地址', '实付款', '订单号', '下单时间', '商品总价', '商品名', '其他信息']);
   for (i = 0; i < imageFiles.length; ++i) {
