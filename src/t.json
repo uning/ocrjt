@@ -1,0 +1,366 @@
+{
+    "paragraphs_result": [
+        {
+            "words_result_idx": [
+                0
+            ]
+        },
+        {
+            "words_result_idx": [
+                1
+            ]
+        },
+        {
+            "words_result_idx": [
+                2
+            ]
+        },
+        {
+            "words_result_idx": [
+                3
+            ]
+        },
+        {
+            "words_result_idx": [
+                4
+            ]
+        },
+        {
+            "words_result_idx": [
+                5
+            ]
+        },
+        {
+            "words_result_idx": [
+                6
+            ]
+        },
+        {
+            "words_result_idx": [
+                7
+            ]
+        },
+        {
+            "words_result_idx": [
+                8
+            ]
+        },
+        {
+            "words_result_idx": [
+                9,
+                10
+            ]
+        },
+        {
+            "words_result_idx": [
+                11
+            ]
+        },
+        {
+            "words_result_idx": [
+                12
+            ]
+        },
+        {
+            "words_result_idx": [
+                13
+            ]
+        },
+        {
+            "words_result_idx": [
+                14,
+                15
+            ]
+        },
+        {
+            "words_result_idx": [
+                16
+            ]
+        },
+        {
+            "words_result_idx": [
+                17
+            ]
+        },
+        {
+            "words_result_idx": [
+                18
+            ]
+        },
+        {
+            "words_result_idx": [
+                19
+            ]
+        },
+        {
+            "words_result_idx": [
+                20
+            ]
+        },
+        {
+            "words_result_idx": [
+                21
+            ]
+        },
+        {
+            "words_result_idx": [
+                22
+            ]
+        },
+        {
+            "words_result_idx": [
+                23
+            ]
+        },
+        {
+            "words_result_idx": [
+                24
+            ]
+        },
+        {
+            "words_result_idx": [
+                25
+            ]
+        },
+        {
+            "words_result_idx": [
+                26
+            ]
+        },
+        {
+            "words_result_idx": [
+                27
+            ]
+        }
+    ],
+    "paragraphs_result_num": 26,
+    "direction": 0,
+    "words_result": [
+        {
+            "probability": {
+                "average": 0.9849566221,
+                "min": 0.9400161505,
+                "variance": 0.0006732171169
+            },
+            "words": "1:26"
+        },
+        {
+            "probability": {
+                "average": 0.6332303882,
+                "min": 0.4549437165,
+                "variance": 0.01963165402
+            },
+            "words": "el660"
+        },
+        {
+            "probability": {
+                "average": 0.9999448061,
+                "min": 0.9998350143,
+                "variance": 4.311790036e-9
+            },
+            "words": "订单详情"
+        },
+        {
+            "probability": {
+                "average": 0.9974215031,
+                "min": 0.9944003224,
+                "variance": 0.000005162299203
+            },
+            "words": "待发货"
+        },
+        {
+            "probability": {
+                "average": 0.9996450543,
+                "min": 0.9965081811,
+                "variance": 7.697117326e-7
+            },
+            "words": "赖家兴19323812837"
+        },
+        {
+            "probability": {
+                "average": 0.998907268,
+                "min": 0.9955236912,
+                "variance": 0.000001443449833
+            },
+            "words": "江西省赣州市兴国县罗蔡屋小区"
+        },
+        {
+            "probability": {
+                "average": 0.9992953539,
+                "min": 0.9966813922,
+                "variance": 0.000001711965865
+            },
+            "words": "遵义红红茶"
+        },
+        {
+            "probability": {
+                "average": 0.9986023307,
+                "min": 0.993725121,
+                "variance": 0.000004860559784
+            },
+            "words": "实付￥608"
+        },
+        {
+            "probability": {
+                "average": 0.9990558624,
+                "min": 0.9951415062,
+                "variance": 0.000003089526444
+            },
+            "words": "送608积分"
+        },
+        {
+            "probability": {
+                "average": 0.999812007,
+                "min": 0.9997256398,
+                "variance": 6.530241237e-9
+            },
+            "words": "￥608"
+        },
+        {
+            "probability": {
+                "average": 1,
+                "min": 1,
+                "variance": 0
+            },
+            "words": "x 1"
+        },
+        {
+            "probability": {
+                "average": 0.9997383356,
+                "min": 0.9989628792,
+                "variance": 1.5872142e-7
+            },
+            "words": "遵义红红茶"
+        },
+        {
+            "probability": {
+                "average": 0.9981370568,
+                "min": 0.9921913743,
+                "variance": 0.000007490521966
+            },
+            "words": "实付￥800"
+        },
+        {
+            "probability": {
+                "average": 0.9963355064,
+                "min": 0.9842953682,
+                "variance": 0.0000324495777
+            },
+            "words": "送800积分"
+        },
+        {
+            "probability": {
+                "average": 0.9995301962,
+                "min": 0.9990468621,
+                "variance": 1.263927061e-7
+            },
+            "words": "￥800"
+        },
+        {
+            "probability": {
+                "average": 1,
+                "min": 1,
+                "variance": 0
+            },
+            "words": "x 1"
+        },
+        {
+            "probability": {
+                "average": 0.99991256,
+                "min": 0.9998005033,
+                "variance": 5.071046694e-9
+            },
+            "words": "订单编号"
+        },
+        {
+            "probability": {
+                "average": 0.999794662,
+                "min": 0.9984570742,
+                "variance": 1.556091007e-7
+            },
+            "words": "11221730008595"
+        },
+        {
+            "probability": {
+                "average": 0.9987379313,
+                "min": 0.9952007532,
+                "variance": 0.000004172220088
+            },
+            "words": "下单时间"
+        },
+        {
+            "probability": {
+                "average": 0.9958060384,
+                "min": 0.9623866081,
+                "variance": 0.00009691659943
+            },
+            "words": "2023-07-1213:25:15"
+        },
+        {
+            "probability": {
+                "average": 0.9997395277,
+                "min": 0.9990254641,
+                "variance": 1.701403818e-7
+            },
+            "words": "商品总价"
+        },
+        {
+            "probability": {
+                "average": 0.9998110533,
+                "min": 0.9996004701,
+                "variance": 1.892952106e-8
+            },
+            "words": "￥1408"
+        },
+        {
+            "probability": {
+                "average": 0.9997750521,
+                "min": 0.9995571971,
+                "variance": 4.747377602e-8
+            },
+            "words": "运费"
+        },
+        {
+            "probability": {
+                "average": 0.9981139898,
+                "min": 0.9971007705,
+                "variance": 0.000001026613518
+            },
+            "words": "￥0"
+        },
+        {
+            "probability": {
+                "average": 0.9996781945,
+                "min": 0.9987454414,
+                "variance": 1.766673989e-7
+            },
+            "words": "实付款￥1408"
+        },
+        {
+            "probability": {
+                "average": 0.9899078012,
+                "min": 0.9607028961,
+                "variance": 0.0002844631381
+            },
+            "words": "申请售后"
+        },
+        {
+            "probability": {
+                "average": 0.9999655485,
+                "min": 0.9999251366,
+                "variance": 1.096676527e-9
+            },
+            "words": "联系客服"
+        },
+        {
+            "probability": {
+                "average": 0.9968384504,
+                "min": 0.9909909964,
+                "variance": 0.0000133720032
+            },
+            "words": "前往首页"
+        }
+    ],
+    "words_result_num": 28,
+    "log_id": 1679417478032993800
+}
