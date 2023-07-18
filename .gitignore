@@ -3,3 +3,5 @@ output
 node_modules
 vendor
 *数据
+t.*
+tt.*
