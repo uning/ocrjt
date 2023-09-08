@@ -1,4 +1,3 @@
-
 const OCR = {};
 OCR.tx = require('./src/txOcr');
 OCR.bd = require('./src/bdOcr');
@@ -7,6 +6,8 @@ const path = require('path');
 const { argv } = require('process');
 const XLSX = require("xlsx");
 const readline = require('readline');
+const currentTimeStamp = new Date().getTime();
+
 
 XLSX.set_fs(fs);
 
@@ -23,7 +24,7 @@ node ${__filename} 713龚洋/test bd pt
   平台          ---   bd(百度) tx（腾讯) (默认bd)
   方法          ---   acc(高精度) pt(普通)  ptl(标准+位置) accl(高精+位置) (默认pt)
   输出目录       ---   输出结果目录（默认 ./output）
-  处理子目录层级  ---   默认 2
+  处理子目录层级  ---   默认 5
 
 `;
 
@@ -121,7 +122,7 @@ async function processAll() {
   //const outputDir = args[3] || path.join(__dirname, 'output');
   const outputDir = path.normalize(args[3]||path.join(imgdir, 'output')) ;
 
-  const maxDepth = args[4] || 2;
+  const maxDepth = args[4] || 5;
 
 
 
@@ -150,9 +151,18 @@ async function processAll() {
     processedResultFile,
   });
 
+  //二次运行,备份结果
+  if(fs.existsSync(processedResultFile)){
+    if(fs.existsSync(outputFilePath)){
+      fs.renameSync(outputFilePath,outputFilePath+'.'+currentTimeStamp)
+    }
+    if(fs.existsSync(outputXlsFilePath)){
+      fs.renameSync(outputXlsFilePath,outputXlsFilePath+'.'+currentTimeStamp)
+    }
+  }
 
-  fs.writeFileSync(outputFilePath, csvhead);
-  fs.writeFileSync(outputFilePath + '.err', '');
+
+
 
 
   //读取已经处理的文件
@@ -162,6 +172,8 @@ async function processAll() {
   } catch (e) {
   }
   console.log('processedFiles:', processedFiles);
+  fs.writeFileSync(outputFilePath, csvhead);
+  fs.writeFileSync(outputFilePath + '.err', '');
 
 
 
