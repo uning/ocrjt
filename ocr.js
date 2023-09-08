@@ -17,7 +17,7 @@ XLSX.set_fs(fs);
 const helpStr = `
 会在输出目录下,将截图目录扁平化建立目录,将识别结果写入该目录下ocr.xlst,ocr.csv
 出错的文件写入 ocr.csv.err
-node ${__filename} 713龚洋/test bd pt 
+node ${__filename}  截图目录 bd pt 
 结果写入  ${__dirname}/output/713龚洋_test
  node ${__filename} 目录 方法 输出目录 处理子目录层级
   截图目录       ---   截图所在目录
