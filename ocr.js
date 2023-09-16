@@ -13,11 +13,10 @@ XLSX.set_fs(fs);
 
 
 
-
 const helpStr = `
 会在输出目录下,将截图目录扁平化建立目录,将识别结果写入该目录下ocr.xlst,ocr.csv
 出错的文件写入 ocr.csv.err
-node ${__filename}  截图目录 bd pt 
+node ocr.js  截图目录 bd pt 
 结果写入  ${__dirname}/output/713龚洋_test
  node ${__filename} 目录 方法 输出目录 处理子目录层级
   截图目录       ---   截图所在目录
@@ -120,7 +119,7 @@ async function processAll() {
   const platform = args[1] || 'bd';
   const method = args[2] || 'pt';
   //const outputDir = args[3] || path.join(__dirname, 'output');
-  const outputDir = path.normalize(args[3]||path.join(imgdir, 'output')) ;
+  const outputDir = path.normalize(args[3] || path.join(imgdir, 'output'));
 
   const maxDepth = args[4] || 5;
 
@@ -134,10 +133,10 @@ async function processAll() {
 
   mkdirp(outputDir);
 
-  const processedResultFile = path.join(outputDir, '.' + fn + '.processed.txt'); // 输出文件的路径
+  const processedResultFile = path.join(outputDir, '.processed.txt'); // 输出文件的路径
 
-  const outputFilePath = path.join(outputDir, fn + 'ocr.csv'); // 输出文件的路径
-  const outputXlsFilePath = path.join(outputDir, fn + 'ocr.xlsx'); // 输出文件的路径
+  let outputFilePath = path.join(outputDir, 'ocr.csv'); // 输出文件的路径
+  let outputXlsFilePath = path.join(outputDir,'ocr.xlsx'); // 输出文件的路径
 
   const csvhead = '文件,日期,备注,下单人,手机号,地址,实付款,订单号,下单时间,商品总价,商品名,其他信息' + "\n";
   console.log('params', {
@@ -151,19 +150,15 @@ async function processAll() {
     processedResultFile,
   });
 
-  //二次运行,备份结果
-  if(fs.existsSync(processedResultFile)){
-    if(fs.existsSync(outputFilePath)){
-      fs.renameSync(outputFilePath,outputFilePath+'.'+currentTimeStamp)
+  //二次运行,加时间戳
+  if (fs.existsSync(processedResultFile)) {
+    if (fs.existsSync(outputFilePath)) {
+      outputFilePath = outputFilePath + '.' + currentTimeStamp + '.csv';
     }
-    if(fs.existsSync(outputXlsFilePath)){
-      fs.renameSync(outputXlsFilePath,outputXlsFilePath+'.'+currentTimeStamp)
+    if (fs.existsSync(outputXlsFilePath)) {
+      outputXlsFilePath = outputXlsFilePath + '.' + currentTimeStamp + '.xlsx';
     }
   }
-
-
-
-
 
   //读取已经处理的文件
   let processedFiles = {}
@@ -180,13 +175,13 @@ async function processAll() {
 
 
   const imageFiles = [];
-  readImageFiles(sourceDir, imageFiles,maxDepth);
-  console.log('procees ',sourceDir,': 总共 ' + imageFiles.length + ' 个文件');
+  readImageFiles(sourceDir, imageFiles, maxDepth);
+  console.log('procees ', sourceDir, ': 总共 ' + imageFiles.length + ' 个文件');
   // return;
   // 遍历每个文件
   let i = 0;
   const wsData = [];
-  wsData.push(['文件(可点击打开)', '日期','备注', '下单人', '手机号', '地址', '实付款', '订单号', '下单时间', '商品总价', '商品名', '其他信息']);
+  wsData.push(['文件(可点击打开)', '日期', '备注', '下单人', '手机号', '地址', '实付款', '订单号', '下单时间', '商品总价', '商品名', '其他信息']);
   for (i = 0; i < imageFiles.length; ++i) {
     //const filePath = path.join(sourceDirectory, imageFiles[i]);
     const filePath = imageFiles[i];
@@ -201,7 +196,7 @@ async function processAll() {
       ret.filename = path.relative(outputDir, filePath);
       const csvData = `${ret.filename},${ret.rq},,${ret.xdr},${ret.sjh},${ret.shdz},${ret.sfk},${ret.ddh1},${ret.xdsj},${ret.spzj},${ret.cpm},${ret.qtsbxx}\n`;
       fs.appendFileSync(outputFilePath, csvData);
-      wsData.push([ret.filename, ret.rq,, ret.xdr, ret.sjh, ret.shdz, ret.sfk, ret.ddh1, ret.xdsj, ret.spzj, ret.cpm, ret.qtsbxx]);
+      wsData.push([ret.filename, ret.rq, , ret.xdr, ret.sjh, ret.shdz, ret.sfk, ret.ddh1, ret.xdsj, ret.spzj, ret.cpm, ret.qtsbxx]);
 
       fs.appendFileSync(processedResultFile, filePath + "\n");
       console.log('process file ok :', csvData, filePath, ret);

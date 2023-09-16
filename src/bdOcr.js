@@ -2,8 +2,12 @@
 const request = require('request');
 const fs = require('fs');
 const path = require('path');
-const AK = "M8nXRA44bHin5hbQq8zH9Tsx"
-const SK = "Os8uHktmPFl2CUwU3vXky2YlGpFCHaWk";
+
+const PC = require('../productConfig');
+const ApiConfig = require('../apiConfig');
+
+const AK = ApiConfig.AK;
+const SK = ApiConfig.SK;
 let TOKEN = ''
 
 
@@ -97,9 +101,9 @@ module.exports = {
             name = '',
             phoneNumber = '', num = 0,
             idxPhone = -1, allIdx = {},
-            findPhone = false, doFlag = false;
+            findPhone = false;
+            ret.cpm = '';
         for (i = 0; i < sitems.length; i += 1) {
-            doFlag = false;
             sitems[i].words =  sitems[i].words ||'';
             val = sitems[i].words ;
             //找姓名电话
@@ -110,7 +114,6 @@ module.exports = {
                 if (findPhone) {
                     ret.sjh = phoneNumber;
                     idxPhone = i;
-                    doFlag = true;
                     if (val.length > 11) {//姓名电话一起了
                         name = val.slice(0, val.length - 11);
                     }
@@ -123,7 +126,6 @@ module.exports = {
             }
             if (findPhone && idxPhone + 1 == i) {//电话号码下面是地址
                 ret.shdz = val;
-                doFlag = true;
             }
             if (val.startsWith('实付')) {
                 if (val.length > 4) {
@@ -133,14 +135,12 @@ module.exports = {
                     }
                     //$w.input5.setValue(spzj); //input3
                     ret.sfk = num;
-                    doFlag = true;
 
                 }
             }
             if (val.startsWith('订单编号')) {
                 if (val.length > 8) {
                     ret.ddh1 = val.replace(/\D/g, "");
-                    doFlag = true;
 
                 }
             }
@@ -151,9 +151,15 @@ module.exports = {
                         num = 0;
                     }
                     ret.spzj = num; //input3
-                    doFlag = true;
 
                 }
+            }
+
+            const pname = PC.match(val);
+            if (pname) {
+              if(ret.cpm)ret.cpm += '|';
+              ret.cpm += pname;
+             
             }
             allIdx[val] = i;    //记录文字出现标号
         }
@@ -184,14 +190,14 @@ module.exports = {
         val = '';
         const ddbhIdx = allIdx['订单编号'];
         for (i = 0; i < sitems.length; ++i) {
-            if (i > idxPhone + 1 && i < ddbhIdx)
+            val += sitems[i].words.trim() + '|';
+            if (i > idxPhone + 1 && i < ddbhIdx){
                 cpm += sitems[i].words + '|';
-            else {
-                val += sitems[i].words.trim() + '|';
             }
         }
         cpm.replace(/\s+/g, "");
-        ret.cpm = cpm;
+        if(!ret.cpm)
+            ret.cpm = cpm;
         ret.qtsbxx = val;
         ret.rq = ret.xdsj && ret.xdsj.substring(0, 10);
 

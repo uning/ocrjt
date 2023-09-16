@@ -6,3 +6,4 @@ vendor
 t.*
 tt.*
 *.pdf
+apiConfig.js

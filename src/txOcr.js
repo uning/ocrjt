@@ -1,30 +1,23 @@
 
 const fs = require('fs');
 const path = require('path');
+const PC = require('../productConfig');
+const ApiConfig = require('../apiConfig');
+
 
 // Depends on tencentcloud-sdk-nodejs version 4.0.3 or higher
 const tencentcloud = require("tencentcloud-sdk-nodejs-ocr");
 const OcrClient = tencentcloud.ocr.v20181119.Client;
+
 // 实例化一个认证对象，入参需要传入腾讯云账户 SecretId 和 SecretKey，此处还需注意密钥对的保密
 // 代码泄露可能会导致 SecretId 和 SecretKey 泄露，并威胁账号下所有资源的安全性。以下代码示例仅供参考，建议采用更安全的方式来使用密钥，请参见：https://cloud.tencent.com/document/product/1278/85305
 // 密钥可前往官网控制台 https://console.cloud.tencent.com/cam/capi 进行获取
-const clientConfig = {
-  credential: {
-    secretId: "AKIDVw96o7jVbRDn9EnEQJwRijZDdrkNABJC",
-    secretKey: "sX0B6tVpunaAUiwxiFb7NNBn9F5g49yX"
-  },
-  region: "ap-guangzhou",
-  profile: {
-    httpProfile: {
-      endpoint: "ocr.tencentcloudapi.com"
-    }
-  }
-};
 
 module.exports = {
   general: async function (filename, method = 'pt') {
 
     const ret = {};
+
     const imageBuffer = fs.readFileSync(filename);
 
     // Convert the binary data to a base64 encoded string
@@ -35,7 +28,7 @@ module.exports = {
     };
 
     // 实例化要请求产品的client对象,clientProfile是可选的
-    const client = new OcrClient(clientConfig);
+    const client = new OcrClient(ApiConfig.clientConfig);
     let txmethod = 'GeneralBasicOCR'
     if (method === 'acc') {
       txmethod = 'GeneralAccurateOCR';
@@ -52,9 +45,11 @@ module.exports = {
       words = [],
       phoneNumber = '', num = 0,
       idxPhone = -1, allIdx = {},
-      findPhone = false, doFlag = false;
+      findPhone = false
+
+      ret.cpm = '';
+
     for (i = 0; i < sitems.length; i += 1) {
-      doFlag = false;
       val = sitems[i].DetectedText;
       words = sitems[i].Words.map((ii) => { return ii.Character; });
       //找姓名电话
@@ -66,7 +61,6 @@ module.exports = {
           //$w.inputPhone1.setValue(phoneNumber); //
           ret.sjh = phoneNumber;
           idxPhone = i;
-          doFlag = true;
           if (words.length > 11) {//姓名电话一起了
             name = words.slice(0, words.length - 11).join('').trim();
           }
@@ -79,7 +73,6 @@ module.exports = {
       }
       if (findPhone && idxPhone + 1 == i) {//电话号码下面是地址
         ret.shdz = val;
-        doFlag = true;
       }
       if (val.startsWith('实付')) {
         if (words.length > 4) {
@@ -89,14 +82,12 @@ module.exports = {
           }
           //$w.input5.setValue(spzj); //input3
           ret.sfk = num;
-          doFlag = true;
 
         }
       }
       if (val.startsWith('订单编号')) {
         if (words.length > 5) {
           ret.ddh1 = val.replace(/\D/g, "");
-          doFlag = true;
 
         }
       }
@@ -107,11 +98,18 @@ module.exports = {
             num = 0;
           }
           ret.spzj = num; //input3
-          doFlag = true;
 
         }
       }
+      const pname = PC.match(val);
+      if (pname) {
+        if(ret.cpm)ret.cpm += '|';
+        ret.cpm += pname;
+       
+      }
+
       allIdx[val] = i;    //记录文字出现标号
+
     }
     if ('待发货' in allIdx) {
       ret.ddzt = '待发货';
@@ -142,12 +140,12 @@ module.exports = {
     for (i = 0; i < sitems.length; ++i) {
       if (i > idxPhone + 1 && i < ddbhIdx)
         cpm += sitems[i].DetectedText + '|';
-      else {
-        val += sitems[i].DetectedText.trim() + '|';
-      }
+      val += sitems[i].DetectedText.trim() + '|';
     }
     cpm.replace(/\s+/g, "");
-    ret.cpm = cpm;
+    if (!ret.cpm) {
+      ret.cpm = cpm;
+    }
     ret.qtsbxx = val;
     ret.rq = ret.xdsj && ret.xdsj.substring(0, 10);
     ret.filename = path.basename(filename);
