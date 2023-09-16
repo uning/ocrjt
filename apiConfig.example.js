@@ -5,8 +5,8 @@
 // 密钥可前往官网控制台 https://console.cloud.tencent.com/cam/capi 进行获取
 const clientConfig = {
     credential: {
-      secretId: "AKIDVw96o7jVbRDn9EnEQJwRijZDdrkNABJC",
-      secretKey: "sX0B6tVpunaAUiwxiFb7NNBn9F5g49yX"
+      secretId: "",
+      secretKey: ""
     },
     region: "ap-guangzhou",
     profile: {
@@ -18,6 +18,6 @@ const clientConfig = {
 
 module.exports = {
     clientConfig,
-   AK:"M8nXRA44bHin5hbQq8zH9Tsx",
-   SK:"Os8uHktmPFl2CUwU3vXky2YlGpFCHaWk"
+   AK:"",
+   SK:""
 }
