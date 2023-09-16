@@ -19,5 +19,29 @@ const clientConfig = {
 module.exports = {
     clientConfig,
    AK:"",
-   SK:""
+   SK:"",
+   //配置产品名，寻找精准产品
+   products: [
+    {
+        name: '遵义红红茶',
+        keywords: ['遵义红红', ]
+    },
+    {
+        name: '壶中福清香菜籽油',
+        keywords: ['壶中福清香']
+    },
+    {
+        name: '壶中福炒香菜籽油',
+        keywords: ['壶中福香炒香']
+    },
+    {
+        name: '石阡苔茶功夫红茶',
+        keywords: ['苔茶功夫']
+    },
+    {
+        name: '石阡苔茶翠芽',
+        keywords: ['苔茶翠芽']
+    },
+
+]
 }

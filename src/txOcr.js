@@ -1,7 +1,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const PC = require('../productConfig');
+const TOOLS = require('../tools');
 const ApiConfig = require('../apiConfig');
 
 
@@ -14,28 +14,41 @@ const OcrClient = tencentcloud.ocr.v20181119.Client;
 // 密钥可前往官网控制台 https://console.cloud.tencent.com/cam/capi 进行获取
 
 module.exports = {
-  general: async function (filename, method = 'pt') {
+  general: async function (filename, cachedir, method = 'pt') {
 
     const ret = {};
-
-    const imageBuffer = fs.readFileSync(filename);
-
-    // Convert the binary data to a base64 encoded string
-    const base64Image = imageBuffer.toString('base64');
-    const params = {
-      "ImageBase64": base64Image,
-      "IsWords": true
-    };
-
-    // 实例化要请求产品的client对象,clientProfile是可选的
-    const client = new OcrClient(ApiConfig.clientConfig);
-    let txmethod = 'GeneralBasicOCR'
+    let result = false;
+    let apimethod = 'GeneralBasicOCR'
     if (method === 'acc') {
-      txmethod = 'GeneralAccurateOCR';
+      apimethod = 'GeneralAccurateOCR';
       params.EnableDetectSplit = true;
     }
 
-    const result = await client[txmethod](params);
+    const cachefile = path.join(cachedir,encodeURIComponent(filename) + apimethod+'.json');
+    if (fs.existsSync(cachefile)) {
+      result = JSON.parse(fs.readFileSync(cachefile));
+      if (result) {
+        console.log('apiCache ok:', apimethod, filename)
+      }
+    }
+
+    if (!result) {
+      const imageBuffer = fs.readFileSync(filename);
+
+      // Convert the binary data to a base64 encoded string
+      const base64Image = imageBuffer.toString('base64');
+      const params = {
+        "ImageBase64": base64Image,
+        "IsWords": true
+      };
+
+      // 实例化要请求产品的client对象,clientProfile是可选的
+      const client = new OcrClient(ApiConfig.clientConfig);
+
+      result = await client[apimethod](params);
+      if (result)
+        fs.writeFileSync(cachefile, JSON.stringify(result));
+    }
 
     const sitems = result.TextDetections;
     //寻找 订单编号
@@ -47,7 +60,9 @@ module.exports = {
       idxPhone = -1, allIdx = {},
       findPhone = false
 
-      ret.cpm = '';
+
+    ret.cpmArr = [];
+
 
     for (i = 0; i < sitems.length; i += 1) {
       val = sitems[i].DetectedText;
@@ -101,11 +116,9 @@ module.exports = {
 
         }
       }
-      const pname = PC.match(val);
+      const pname = TOOLS.matchCpm(val);
       if (pname) {
-        if(ret.cpm)ret.cpm += '|';
-        ret.cpm += pname;
-       
+        ret.cpmArr.push(pname);
       }
 
       allIdx[val] = i;    //记录文字出现标号
@@ -143,15 +156,14 @@ module.exports = {
       val += sitems[i].DetectedText.trim() + '|';
     }
     cpm.replace(/\s+/g, "");
-    if (!ret.cpm) {
-      ret.cpm = cpm;
-    }
+    ret.cpm = cpm;
+
     ret.qtsbxx = val;
     ret.rq = ret.xdsj && ret.xdsj.substring(0, 10);
     ret.filename = path.basename(filename);
 
 
-    console.log(txmethod, filename, ret);
+    console.log(apimethod, filename, ret);
     return ret;
   },
 

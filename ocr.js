@@ -8,6 +8,8 @@ const XLSX = require("xlsx");
 const readline = require('readline');
 const currentTimeStamp = new Date().getTime();
 
+const OUTDIR = 'output'
+
 
 XLSX.set_fs(fs);
 
@@ -69,7 +71,7 @@ function readImageFiles(dir, results, maxDepth = 2) {
     files.forEach(file => {
       const filePath = path.join(dir, file);
       const stat = fs.statSync(filePath);
-      if (stat && stat.isDirectory()) {
+      if (stat && stat.isDirectory() && file!= OUTDIR ) {
         queue.push({ dir: filePath, depth: depth + 1 });
       } else {
         if (file.toLocaleLowerCase().match(/\.(jpg|jpeg|png|gif)$/)) {
@@ -118,27 +120,34 @@ async function processAll() {
 
   const platform = args[1] || 'bd';
   const method = args[2] || 'pt';
-  //const outputDir = args[3] || path.join(__dirname, 'output');
-  const outputDir = path.normalize(args[3] || path.join(imgdir, 'output'));
+
+  const outputDir = path.normalize(args[3] || path.join(imgdir, OUTDIR));
 
   const maxDepth = args[4] || 5;
 
 
 
 
-  const fn = imgdir.replace(/\./g, '').replace(/\//g, '_');
+  const fn = imgdir.replace(/\./g, '').replace(/\//g, '_').replace(/\\/,'_');
   let sourceDir = imgdir; // 指定目录的路径
   if (!path.isAbsolute(sourceDir))
     sourceDir = path.resolve(imgdir);
 
-  mkdirp(outputDir);
 
   const processedResultFile = path.join(outputDir, '.processed.txt'); // 输出文件的路径
 
   let outputFilePath = path.join(outputDir, 'ocr.csv'); // 输出文件的路径
   let outputXlsFilePath = path.join(outputDir,'ocr.xlsx'); // 输出文件的路径
 
-  const csvhead = '文件,日期,备注,下单人,手机号,地址,实付款,订单号,下单时间,商品总价,商品名,其他信息' + "\n";
+  const cacheDir = path.join(outputDir,'cache');
+  mkdirp(cacheDir);
+
+  
+
+
+
+  const csvhead = '文件,日期,来源,归属,备注,下单人,手机号,地址,实付款,订单号,下单时间,商品总价,商品名,其他信息' + "\n";
+  const xlsxHead = ['文件(可点击打开)', '日期','来源','归属', '备注', '下单人', '手机号', '地址', '实付款', '订单号', '下单时间', '商品总价', '商品名', '其他信息'];
   console.log('params', {
     platform,
     method,
@@ -150,6 +159,9 @@ async function processAll() {
     processedResultFile,
   });
 
+    //读取已经处理的文件
+    let processedFiles = {}
+/*
   //二次运行,加时间戳
   if (fs.existsSync(processedResultFile)) {
     if (fs.existsSync(outputFilePath)) {
@@ -160,13 +172,13 @@ async function processAll() {
     }
   }
 
-  //读取已经处理的文件
-  let processedFiles = {}
+
   try {
     processedFiles = await readKeys(processedResultFile);
   } catch (e) {
   }
   console.log('processedFiles:', processedFiles);
+  */
   fs.writeFileSync(outputFilePath, csvhead);
   fs.writeFileSync(outputFilePath + '.err', '');
 
@@ -181,9 +193,15 @@ async function processAll() {
   // 遍历每个文件
   let i = 0;
   const wsData = [];
-  wsData.push(['文件(可点击打开)', '日期', '备注', '下单人', '手机号', '地址', '实付款', '订单号', '下单时间', '商品总价', '商品名', '其他信息']);
+  wsData.push(xlsxHead);
+
+  const toWsData = {};
+
+
+  
+
   for (i = 0; i < imageFiles.length; ++i) {
-    //const filePath = path.join(sourceDirectory, imageFiles[i]);
+
     const filePath = imageFiles[i];
     if (processedFiles[filePath]) {
       console.log('processed :', filePath);
@@ -191,20 +209,39 @@ async function processAll() {
     }
 
     try {
-      const ret = await OCR[platform].general(filePath, method);
+      const ret = await OCR[platform].general(filePath,cacheDir, method);
 
       ret.filename = path.relative(outputDir, filePath);
-      const csvData = `${ret.filename},${ret.rq},,${ret.xdr},${ret.sjh},${ret.shdz},${ret.sfk},${ret.ddh1},${ret.xdsj},${ret.spzj},${ret.cpm},${ret.qtsbxx}\n`;
+      ret.fnflag =  encodeURIComponent(ret.filename);
+
+      ret._from = path.dirname(ret.filename);
+      if(ret.cpmArr){
+        ret.cpm = ret.cpmArr.join('|');
+        ret._to = '|';
+        for (var cp  of ret.cpmArr) {  
+          //console.log(cp);  
+          const to = cp+'_'+ret.sfk;
+          const toDir = path.join(outputDir,to);
+          mkdirp(toDir);
+          try {  
+            fs.copyFileSync(filePath,path.join(toDir,ret.fnflag));  
+          } catch (err) {  
+            console.error('cp Error:',filePath,toDir, err);  
+          }
+
+          ret._to += to+'|';
+        }
+      }
+
+      
+
+      const csvData = `${ret.filename},${ret.rq},${ret._from},${ret._to},,${ret.xdr},${ret.sjh},${ret.shdz},${ret.sfk},${ret.ddh1},${ret.xdsj},${ret.spzj},${ret.cpm},${ret.qtsbxx}\n`;
       fs.appendFileSync(outputFilePath, csvData);
-      wsData.push([ret.filename, ret.rq, , ret.xdr, ret.sjh, ret.shdz, ret.sfk, ret.ddh1, ret.xdsj, ret.spzj, ret.cpm, ret.qtsbxx]);
+      wsData.push([ret.filename, ret.rq, ret._from,ret._to,, ret.xdr, ret.sjh, ret.shdz, ret.sfk, ret.ddh1, ret.xdsj, ret.spzj, ret.cpm, ret.qtsbxx]);
 
       fs.appendFileSync(processedResultFile, filePath + "\n");
       console.log('process file ok :', csvData, filePath, ret);
-
-
       await wait(200);
-
-
     } catch (err) {
       console.log('process file err :', filePath, err);
       fs.appendFileSync(outputFilePath + '.err', filePath + ':' + err.toString() + "\n");
@@ -217,10 +254,10 @@ async function processAll() {
 
   for (i = 0; i < wsData.length; ++i) {
     crname = 'A' + (i + 1);
-    filname = wsData[i][0];
+    filename = wsData[i][0];
     ws[crname].l = {
-      Target: "file:///" + filname,
-      Tooltip: '点击打开' + filname
+      Target: "file:///" + filename,
+      Tooltip: '点击打开' + filename
     };
   }
 

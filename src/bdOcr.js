@@ -3,7 +3,7 @@ const request = require('request');
 const fs = require('fs');
 const path = require('path');
 
-const PC = require('../productConfig');
+const TOOLS = require('../tools');
 const ApiConfig = require('../apiConfig');
 
 const AK = ApiConfig.AK;
@@ -48,50 +48,64 @@ function getFileContentAsBase64(path) {
 
 module.exports = {
 
-    general: async function (filename, method = 'pt') {
+    general: async function (filename, cachedir, method = 'pt') {
 
-        const options = {
-            'method': 'POST',
-            'headers': {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Accept': 'application/json'
-            },
-        };
-        const form ={
-            'image': getFileContentAsBase64(filename),
-            'language_type': 'CHN_ENG',
-            'detect_direction': 'true',
-            'paragraph': 'true',
-            'probability': 'true'
-        };
 
-        let bdmethod = 'general_basic'
+        const ret = {}
+
+        let result = false;
+        let apimethod = 'general_basic'
         if (method == 'ptl') {
             form.vertexes_location = true;
-            bdmethod = 'general'
+            apimethod = 'general'
         } else if (method == 'accl') {
             form.vertexes_location = true;
-            bdmethod = 'accurate'
+            apimethod = 'accurate'
         } else if (method == 'acc') {
-            bdmethod = 'accurate_basic'
+            apimethod = 'accurate_basic'
         }
 
-        options.url = 'https://aip.baidubce.com/rest/2.0/ocr/v1/' + bdmethod + '?access_token=' + await getAccessToken(),
-        options.form = form;
+        const cachefile = path.join(cachedir,encodeURIComponent(filename) + apimethod+'.json');
+        if (fs.existsSync(cachefile)) {
+            result = JSON.parse(fs.readFileSync(cachefile));
+            if(result){
+                console.log('api cache ok:',filename)
+            }
+        }
+
+     
 
 
+
+        if (!result) {
+            const options = {
+                'method': 'POST',
+                'headers': {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': 'application/json'
+                },
+            };
+            const form = {
+                'image': getFileContentAsBase64(filename),
+                'language_type': 'CHN_ENG',
+                'detect_direction': 'true',
+                'paragraph': 'true',
+                'probability': 'true'
+            };
+    
          
-        const ret = {}
-        ret.filename = path.basename(filename);
-
-
-
-        const result = await new Promise((resolve, reject) => {
-            request(options, (error, response) => {
-                if (error) { reject(error) }
-                else { resolve(JSON.parse(response.body)) }
+    
+            options.url = 'https://aip.baidubce.com/rest/2.0/ocr/v1/' + apimethod + '?access_token=' + await getAccessToken(),
+                options.form = form;
+            result = await new Promise((resolve, reject) => {
+                request(options, (error, response) => {
+                    if (error) { reject(error) }
+                    else { resolve(JSON.parse(response.body)) }
+                })
             })
-        })
+            if (result)
+                fs.writeFileSync(cachefile, JSON.stringify(result));
+        }
 
         const sitems = result.words_result || [];
 
@@ -102,10 +116,10 @@ module.exports = {
             phoneNumber = '', num = 0,
             idxPhone = -1, allIdx = {},
             findPhone = false;
-            ret.cpm = '';
+        ret.cpmArr = [];
         for (i = 0; i < sitems.length; i += 1) {
-            sitems[i].words =  sitems[i].words ||'';
-            val = sitems[i].words ;
+            sitems[i].words = sitems[i].words || '';
+            val = sitems[i].words;
             //找姓名电话
             if (!findPhone && val.length >= 11) { //电话号码
                 phoneNumber = val.slice(-11); // 获取数组中后面11个元素，并将它们连接成一个字符串
@@ -155,11 +169,11 @@ module.exports = {
                 }
             }
 
-            const pname = PC.match(val);
+            const pname = TOOLS.matchCpm(val);
             if (pname) {
-              if(ret.cpm)ret.cpm += '|';
-              ret.cpm += pname;
-             
+                ret.cpmArr.push(pname);
+
+
             }
             allIdx[val] = i;    //记录文字出现标号
         }
@@ -191,17 +205,16 @@ module.exports = {
         const ddbhIdx = allIdx['订单编号'];
         for (i = 0; i < sitems.length; ++i) {
             val += sitems[i].words.trim() + '|';
-            if (i > idxPhone + 1 && i < ddbhIdx){
+            if (i > idxPhone + 1 && i < ddbhIdx) {
                 cpm += sitems[i].words + '|';
             }
         }
         cpm.replace(/\s+/g, "");
-        if(!ret.cpm)
-            ret.cpm = cpm;
+        ret.cpm = cpm;
         ret.qtsbxx = val;
         ret.rq = ret.xdsj && ret.xdsj.substring(0, 10);
 
-        console.log(bdmethod, filename, JSON.stringify(result));
+        console.log(apimethod, filename, JSON.stringify(result));
         return ret;
 
 
