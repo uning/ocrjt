@@ -245,7 +245,7 @@ async function processAll() {
 
   //写excel文件
   const ws = XLSX.utils.aoa_to_sheet(wsData);
-  let crname = '', filname = '';
+  let crname = '', filename = '';
 
   for (i = 0; i < wsData.length; ++i) {
     crname = 'A' + (i + 1);
@@ -256,7 +256,7 @@ async function processAll() {
     };
   }
 
-  const wsName = fn;
+  const wsName = 'output';
 
 
   /* Create workbook */

@@ -6,3 +6,5 @@ t.*
 tt.*
 *.pdf
 apiConfig.js
+package-lock.json
+
