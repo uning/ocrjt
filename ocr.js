@@ -51,7 +51,7 @@ async function wait(ms) {
 function mkdirp(directory) {
   try {
     fs.mkdirSync(directory, { recursive: true });
-    console.log(directory, '目录已创建或已存在');
+    //console.log(directory, '目录已创建或已存在');
   } catch (err) {
     if (!err.code === 'EEXIST') {
       console.error('无法创建目录:', err);
@@ -71,7 +71,7 @@ function readImageFiles(dir, results, maxDepth = 2) {
     files.forEach(file => {
       const filePath = path.join(dir, file);
       const stat = fs.statSync(filePath);
-      if (stat && stat.isDirectory() && file!= OUTDIR ) {
+      if (stat && stat.isDirectory() && file != OUTDIR) {
         queue.push({ dir: filePath, depth: depth + 1 });
       } else {
         if (file.toLocaleLowerCase().match(/\.(jpg|jpeg|png|gif)$/)) {
@@ -128,7 +128,7 @@ async function processAll() {
 
 
 
-  const fn = imgdir.replace(/\./g, '').replace(/\//g, '_').replace(/\\/,'_');
+  const fn = imgdir.replace(/\./g, '').replace(/\//g, '_').replace(/\\/, '_');
   let sourceDir = imgdir; // 指定目录的路径
   if (!path.isAbsolute(sourceDir))
     sourceDir = path.resolve(imgdir);
@@ -137,17 +137,17 @@ async function processAll() {
   const processedResultFile = path.join(outputDir, '.processed.txt'); // 输出文件的路径
 
   let outputFilePath = path.join(outputDir, 'ocr.csv'); // 输出文件的路径
-  let outputXlsFilePath = path.join(outputDir,'ocr.xlsx'); // 输出文件的路径
+  let outputXlsFilePath = path.join(outputDir, 'ocr.xlsx'); // 输出文件的路径
 
-  const cacheDir = path.join(outputDir,'cache');
+  const cacheDir = path.join(outputDir, 'cache');
   mkdirp(cacheDir);
 
-  
+
 
 
 
   const csvhead = '文件,日期,来源,归属,备注,下单人,手机号,地址,实付款,订单号,下单时间,商品总价,商品名,其他信息' + "\n";
-  const xlsxHead = ['文件(可点击打开)', '日期','来源','归属', '备注', '下单人', '手机号', '地址', '实付款', '订单号', '下单时间', '商品总价', '商品名', '其他信息'];
+  const xlsxHead = ['文件(可点击打开)', '日期', '来源', '归属', '备注', '下单人', '手机号', '地址', '实付款', '订单号', '下单时间', '商品总价', '商品名', '其他信息'];
   console.log('params', {
     platform,
     method,
@@ -159,26 +159,26 @@ async function processAll() {
     processedResultFile,
   });
 
-    //读取已经处理的文件
-    let processedFiles = {}
-/*
-  //二次运行,加时间戳
-  if (fs.existsSync(processedResultFile)) {
-    if (fs.existsSync(outputFilePath)) {
-      outputFilePath = outputFilePath + '.' + currentTimeStamp + '.csv';
+  //读取已经处理的文件
+  let processedFiles = {}
+  /*
+    //二次运行,加时间戳
+    if (fs.existsSync(processedResultFile)) {
+      if (fs.existsSync(outputFilePath)) {
+        outputFilePath = outputFilePath + '.' + currentTimeStamp + '.csv';
+      }
+      if (fs.existsSync(outputXlsFilePath)) {
+        outputXlsFilePath = outputXlsFilePath + '.' + currentTimeStamp + '.xlsx';
+      }
     }
-    if (fs.existsSync(outputXlsFilePath)) {
-      outputXlsFilePath = outputXlsFilePath + '.' + currentTimeStamp + '.xlsx';
+  
+  
+    try {
+      processedFiles = await readKeys(processedResultFile);
+    } catch (e) {
     }
-  }
-
-
-  try {
-    processedFiles = await readKeys(processedResultFile);
-  } catch (e) {
-  }
-  console.log('processedFiles:', processedFiles);
-  */
+    console.log('processedFiles:', processedFiles);
+    */
   fs.writeFileSync(outputFilePath, csvhead);
   fs.writeFileSync(outputFilePath + '.err', '');
 
@@ -195,10 +195,6 @@ async function processAll() {
   const wsData = [];
   wsData.push(xlsxHead);
 
-  const toWsData = {};
-
-
-  
 
   for (i = 0; i < imageFiles.length; ++i) {
 
@@ -209,38 +205,37 @@ async function processAll() {
     }
 
     try {
-      const ret = await OCR[platform].general(filePath,cacheDir, method);
+      const ret = await OCR[platform].general(filePath, cacheDir, method);
 
       ret.filename = path.relative(outputDir, filePath);
-      ret.fnflag =  encodeURIComponent(ret.filename);
+      ret.fnflag = encodeURIComponent(ret.filename.substr(2));
 
       ret._from = path.dirname(ret.filename);
-      if(ret.cpmArr){
+      if (ret.cpmArr.length > 0) {
         ret.cpm = ret.cpmArr.join('|');
         ret._to = '|';
-        for (var cp  of ret.cpmArr) {  
+        for (let j = 0; j < ret.cpmArr.length; j++) {
           //console.log(cp);  
-          const to = cp+'_'+ret.sfk;
-          const toDir = path.join(outputDir,to);
-          mkdirp(toDir);
-          try {  
-            fs.copyFileSync(filePath,path.join(toDir,ret.fnflag));  
-          } catch (err) {  
-            console.error('cp Error:',filePath,toDir, err);  
+          const cp = ret.cpmArr[j];
+          const to = cp + '_' + ret.cpSfArr[j] || ret.sfk;
+          const toDir = path.join(outputDir, 'cp', to);
+          try {
+            mkdirp(toDir);
+            fs.copyFileSync(filePath, path.join(toDir, ret.fnflag));
+          } catch (err) {
+            //console.error('cp Error:', filePath, toDir, err);
           }
-
-          ret._to += to+'|';
+          ret._to += to + '|';
         }
       }
 
-      
+
 
       const csvData = `${ret.filename},${ret.rq},${ret._from},${ret._to},,${ret.xdr},${ret.sjh},${ret.shdz},${ret.sfk},${ret.ddh1},${ret.xdsj},${ret.spzj},${ret.cpm},${ret.qtsbxx}\n`;
       fs.appendFileSync(outputFilePath, csvData);
-      wsData.push([ret.filename, ret.rq, ret._from,ret._to,, ret.xdr, ret.sjh, ret.shdz, ret.sfk, ret.ddh1, ret.xdsj, ret.spzj, ret.cpm, ret.qtsbxx]);
-
+      wsData.push([ret.filename, ret.rq, ret._from, ret._to, , ret.xdr, ret.sjh, ret.shdz, ret.sfk, ret.ddh1, ret.xdsj, ret.spzj, ret.cpm, ret.qtsbxx]);
       fs.appendFileSync(processedResultFile, filePath + "\n");
-      console.log('process file ok :', csvData, filePath, ret);
+      console.log('process file ok :', filePath, ret);
       await wait(200);
     } catch (err) {
       console.log('process file err :', filePath, err);

@@ -28,11 +28,11 @@ module.exports = {
     },
     {
         name: '壶中福清香菜籽油',
-        keywords: ['壶中福清香']
+        keywords: ['中福清香']
     },
     {
         name: '壶中福炒香菜籽油',
-        keywords: ['壶中福香炒香']
+        keywords: ['中福炒香']
     },
     {
         name: '石阡苔茶功夫红茶',

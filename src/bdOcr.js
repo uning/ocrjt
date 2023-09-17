@@ -103,8 +103,10 @@ module.exports = {
                     else { resolve(JSON.parse(response.body)) }
                 })
             })
-            if (result)
+            if (result){
                 fs.writeFileSync(cachefile, JSON.stringify(result));
+                console.log('api ok',apimethod, filename, JSON.stringify(result));
+            }
         }
 
         const sitems = result.words_result || [];
@@ -117,6 +119,7 @@ module.exports = {
             idxPhone = -1, allIdx = {},
             findPhone = false;
         ret.cpmArr = [];
+        ret.cpSfArr = [];
         for (i = 0; i < sitems.length; i += 1) {
             sitems[i].words = sitems[i].words || '';
             val = sitems[i].words;
@@ -172,8 +175,8 @@ module.exports = {
             const pname = TOOLS.matchCpm(val);
             if (pname) {
                 ret.cpmArr.push(pname);
-
-
+                const cpsf = sitems[i+1].words||'';
+                ret.cpSfArr.push(cpsf.replace(/\D/g, ""));
             }
             allIdx[val] = i;    //记录文字出现标号
         }
@@ -214,7 +217,6 @@ module.exports = {
         ret.qtsbxx = val;
         ret.rq = ret.xdsj && ret.xdsj.substring(0, 10);
 
-        console.log(apimethod, filename, JSON.stringify(result));
         return ret;
 
 

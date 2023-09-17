@@ -28,7 +28,7 @@ module.exports = {
     if (fs.existsSync(cachefile)) {
       result = JSON.parse(fs.readFileSync(cachefile));
       if (result) {
-        console.log('apiCache ok:', apimethod, filename)
+        console.log('api cache ok:', apimethod, filename)
       }
     }
 
@@ -46,8 +46,11 @@ module.exports = {
       const client = new OcrClient(ApiConfig.clientConfig);
 
       result = await client[apimethod](params);
-      if (result)
-        fs.writeFileSync(cachefile, JSON.stringify(result));
+      if (result){
+        fs.writeFileSync(cachefile, JSON.stringify(result));               
+       console.log('api ok',apimethod, filename, JSON.stringify(result));
+      }
+
     }
 
     const sitems = result.TextDetections;
@@ -62,6 +65,7 @@ module.exports = {
 
 
     ret.cpmArr = [];
+    ret.cpSfArr = [];
 
 
     for (i = 0; i < sitems.length; i += 1) {
@@ -119,6 +123,8 @@ module.exports = {
       const pname = TOOLS.matchCpm(val);
       if (pname) {
         ret.cpmArr.push(pname);
+        const cpsf = sitems[i+1].DetectedText||'';
+        ret.cpSfArr.push(cpsf.replace(/\D/g, ""));
       }
 
       allIdx[val] = i;    //记录文字出现标号
@@ -163,7 +169,6 @@ module.exports = {
     ret.filename = path.basename(filename);
 
 
-    console.log(apimethod, filename, ret);
     return ret;
   },
 
