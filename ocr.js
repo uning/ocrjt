@@ -6,6 +6,7 @@ const path = require('path');
 const { argv } = require('process');
 const XLSX = require("xlsx");
 const readline = require('readline');
+const apiConfig = require('./apiConfig');
 const currentTimeStamp = new Date().getTime();
 
 const OUTDIR = 'output'
@@ -22,7 +23,7 @@ node ocr.js  截图目录 bd pt
 结果写入  ${__dirname}/output/713龚洋_test
  node ${__filename} 目录 方法 输出目录 处理子目录层级
   截图目录       ---   截图所在目录
-  平台          ---   bd(百度) tx（腾讯) (默认bd)
+  平台          ---   bd(百度) tx（腾讯) (默认配置文件)
   方法          ---   acc(高精度) pt(普通)  ptl(标准+位置) accl(高精+位置) (默认pt)
   输出目录       ---   输出结果目录（默认 ./output）
   处理子目录层级  ---   默认 5
@@ -118,7 +119,7 @@ async function processAll() {
     usage();
   }
 
-  const platform = args[1] || 'bd';
+  const platform = args[1] || apiConfig.defaultPt ||'bd';
   const method = args[2] || 'pt';
 
   const outputDir = path.normalize(args[3] || path.join(imgdir, OUTDIR));

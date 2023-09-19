@@ -17,7 +17,9 @@ const clientConfig = {
   };
 
 module.exports = {
+
     clientConfig,
+    defaultPt:'bd',
    AK:"",
    SK:"",
    //配置产品名，寻找精准产品
