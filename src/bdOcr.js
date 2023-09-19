@@ -156,8 +156,8 @@ module.exports = {
                 }
             }
             if (val.startsWith('订单编号')) {
-                if (val.length > 8) {
-                    ret.ddh1 = val.replace(/\D/g, "");
+                if (val.length > 5) {
+                    ret.ddh1 = val.replace(/\D\S/g, "");
 
                 }
             }
