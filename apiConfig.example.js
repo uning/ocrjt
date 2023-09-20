@@ -44,6 +44,11 @@ module.exports = {
         name: '石阡苔茶翠芽',
         keywords: ['苔茶翠芽']
     },
+    {
+      name: '凤莎红茶',
+      keywords: []
+  },
+
 
 ]
 }
