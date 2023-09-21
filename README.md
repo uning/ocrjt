@@ -12,6 +12,7 @@
  1. cp apiConfig.example.js  apiConfig.js，
  2. 配置api参数apiConfig.js，
  3. 配置需精准识别品名的商品名apiConfig.js，
+    1. apiConfig.js， products，配置要精准识别的产品名称
 
  注意子目录output默认当成识别结果目录，不会被处理
  输出文件在output下

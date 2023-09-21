@@ -5,11 +5,10 @@ const fs = require('fs');
 const path = require('path');
 const { argv } = require('process');
 const XLSX = require("xlsx");
-const readline = require('readline');
-const apiConfig = require('./apiConfig');
+const ApiConfig = require('./apiConfig');
+const Tools = require('./tools');
 const currentTimeStamp = new Date().getTime();
 
-const OUTDIR = 'output'
 
 
 XLSX.set_fs(fs);
@@ -42,61 +41,6 @@ function usage() {
 
 
 
-//等待时间
-async function wait(ms) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-}
-
-function mkdirp(directory) {
-  try {
-    fs.mkdirSync(directory, { recursive: true });
-    //console.log(directory, '目录已创建或已存在');
-  } catch (err) {
-    if (!err.code === 'EEXIST') {
-      console.error('无法创建目录:', err);
-    }
-  }
-}
-
-/*
-读取文件夹dir下文件夹
-*/
-function readImageFiles(dir, results, maxDepth = 2) {
-  const queue = [{ dir, depth: 0 }];
-  while (queue.length > 0) {
-    const { dir, depth } = queue.shift();
-    if (depth > maxDepth) continue;
-    const files = fs.readdirSync(dir);
-    files.forEach(file => {
-      const filePath = path.join(dir, file);
-      const stat = fs.statSync(filePath);
-      if (stat && stat.isDirectory() && file != OUTDIR) {
-        queue.push({ dir: filePath, depth: depth + 1 });
-      } else {
-        if (file.toLocaleLowerCase().match(/\.(jpg|jpeg|png|gif)$/)) {
-          results.push(filePath);
-        }
-      }
-    });
-  }
-}
-
-
-async function readKeys(file) {
-  const keys = {};
-  const fileStream = fs.createReadStream(file);
-  const rl = readline.createInterface({
-    input: fileStream,
-    crlfDelay: Infinity
-  });
-  for await (const line of rl) {
-    keys[line] = true;
-  }
-  return keys;
-}
-
 
 
 /*
@@ -119,10 +63,10 @@ async function processAll() {
     usage();
   }
 
-  const platform = args[1] || apiConfig.defaultPt ||'bd';
+  const platform = args[1] || ApiConfig.defaultPt || 'bd';
   const method = args[2] || 'pt';
 
-  const outputDir = path.normalize(args[3] || path.join(imgdir, OUTDIR));
+  const outputDir = path.normalize(args[3] || path.join(imgdir, ApiConfig.OUTDIR));
 
   const maxDepth = args[4] || 5;
 
@@ -141,7 +85,7 @@ async function processAll() {
   let outputXlsFilePath = path.join(outputDir, 'ocr.xlsx'); // 输出文件的路径
 
   const cacheDir = path.join(outputDir, 'cache');
-  mkdirp(cacheDir);
+  Tools.mkdirp(cacheDir);
 
 
 
@@ -162,24 +106,7 @@ async function processAll() {
 
   //读取已经处理的文件
   let processedFiles = {}
-  /*
-    //二次运行,加时间戳
-    if (fs.existsSync(processedResultFile)) {
-      if (fs.existsSync(outputFilePath)) {
-        outputFilePath = outputFilePath + '.' + currentTimeStamp + '.csv';
-      }
-      if (fs.existsSync(outputXlsFilePath)) {
-        outputXlsFilePath = outputXlsFilePath + '.' + currentTimeStamp + '.xlsx';
-      }
-    }
   
-  
-    try {
-      processedFiles = await readKeys(processedResultFile);
-    } catch (e) {
-    }
-    console.log('processedFiles:', processedFiles);
-    */
   fs.writeFileSync(outputFilePath, csvhead);
   fs.writeFileSync(outputFilePath + '.err', '');
 
@@ -188,7 +115,7 @@ async function processAll() {
 
 
   const imageFiles = [];
-  readImageFiles(sourceDir, imageFiles, maxDepth);
+  Tools.readImageFiles(sourceDir, imageFiles, maxDepth);
   console.log('procees ', sourceDir, ': 总共 ' + imageFiles.length + ' 个文件');
   // return;
   // 遍历每个文件
@@ -219,12 +146,15 @@ async function processAll() {
           //console.log(cp);  
           const cp = ret.cpmArr[j];
           const to = cp + '_' + ret.cpSfArr[j] || ret.sfk;
-          const toDir = path.join(outputDir, 'cp', to);
-          try {
-            mkdirp(toDir);
-            fs.copyFileSync(filePath, path.join(toDir, ret.fnflag));
-          } catch (err) {
-            //console.error('cp Error:', filePath, toDir, err);
+          //按产品名分类
+          if (ApiConfig.byCp) {
+            const toDir = path.join(outputDir, 'cp', to);
+            try {
+              Tools.mkdirp(toDir);
+              fs.copyFileSync(filePath, path.join(toDir, ret.fnflag));
+            } catch (err) {
+              //console.error('cp Error:', filePath, toDir, err);
+            }
           }
           ret._to += to + '|';
         }
@@ -237,7 +167,7 @@ async function processAll() {
       wsData.push([ret.filename, ret.rq, ret._from, ret._to, , ret.xdr, ret.sjh, ret.shdz, ret.sfk, ret.ddh1, ret.xdsj, ret.spzj, ret.cpm, ret.qtsbxx]);
       fs.appendFileSync(processedResultFile, filePath + "\n");
       console.log('process file ok :', filePath, ret);
-      await wait(200);
+      await Tools.wait(200);
     } catch (err) {
       console.log('process file err :', filePath, err);
       fs.appendFileSync(outputFilePath + '.err', filePath + ':' + err.toString() + "\n");
