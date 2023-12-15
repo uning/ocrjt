@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            text-align: center;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: left;
+            overflow: auto;
+            margin-top: 20px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 8px;
+            cursor: pointer;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        select,
+        input {
+            margin-bottom: 10px;
+            padding: 8px;
+            width: 50%;
+        }
+
+        hr {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .explanation {
+            color: #777;
+            font-style: italic;
+            margin-top: 5px;
+            display: block;
+            text-align: left;
+        }
+
+        .saveButton {
+            margin-top: 10px;
+            padding: 8px;
+            cursor: pointer;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .saveButton:hover {
+            background-color: #006080;
+        }
+
+        .configItem {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>设置</h1>
+
+    <div id="jsonConfig">
+        <div class="configItem">
+            <label for="byCp">按产品分类到目录（byCp）: </label>
+            <input type="checkbox" id="byCp" checked>
+            <span class="explanation">// 是否按产品分类将结果输出到目录</span>
+        </div>
+        <hr>
+
+        <div class="configItem">
+            <label for="AK">百度AK（AK）: </label>
+            <input type="text" id="AK" value="M8nXRA44bHin5hbQq8zH9Tsx">
+            <span class="explanation">// 百度API Key</span>
+        </div>
+        <hr>
+
+        <div class="configItem">
+            <label for="SK">百度OCR SK（SK）: </label>
+            <input type="text" id="SK" value="Os8uHktmPFl2CUwU3vXky2YlGpFCHaWk">
+            <span class="explanation">// 百度OCR Secret Key</span>
+        </div>
+        <hr>
+
+        <div class="configItem">
+            <label for="defaultPt">默认平台（defaultPt）: </label>
+            <select id="defaultPt">
+                <option value="bd" selected>bd</option>
+                <option value="tx">tx</option>
+                <!-- Add other options as needed -->
+            </select>
+            <span class="explanation">// 默认使用的平台</span>
+        </div>
+        <hr>
+
+        <div class="configItem">
+            <label for="OUTDIR">输出目录（OUTDIR）: </label>
+            <input type="text" id="OUTDIR" value="output">
+            <span class="explanation">// 结果输出目录</span>
+        </div>
+        <hr>
+
+        <button class="saveButton" onclick="saveConfig()">保存</button>
+    </div>
+
+    <script>
+
+        let config;
+        window.addEventListener('DOMContentLoaded', async () => {
+            // 初始化页面时渲染数据
+            config = await electronAPI.getGeneral();
+            document.getElementById('byCp').checked = config.byCp;
+            document.getElementById('AK').value = config.AK;
+            document.getElementById('SK').value = config.SK;
+            document.getElementById('defaultPt').value = config.defaultPt;
+            document.getElementById('OUTDIR').value = config.OUTDIR;
+        });
+        function saveConfig() {
+            var config = {
+                byCp: document.getElementById('byCp').checked,
+                AK: document.getElementById('AK').value,
+                SK: document.getElementById('SK').value,
+                defaultPt: document.getElementById('defaultPt').value,
+                OUTDIR: document.getElementById('OUTDIR').value,
+            };
+
+            // Add logic to save the JSON configuration as needed
+            //console.log(jsonConfig);
+            //alert('Configuration saved!');
+            electronAPI.saveGeneral(config);
+        }
+    </script>
+
+</body>
+
+</html>

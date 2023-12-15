@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>对单工具</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        #userInfo {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        #mainContainer {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #selBtn, #procssBtn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        #procssBtn {
+            background-color: #2196F3;
+        }
+
+        #selDir {
+            display: inline-block;
+            margin-left: 10px;
+            color: #555;
+        }
+
+        #pstatus {
+            white-space: pre-wrap;
+            font-size: 14px;
+            margin-top: 20px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        #openLink {
+            display:none;
+        }
+
+        pre {
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div id="userInfo"></div>
+    <div id="mainContainer">
+        <h1>对单工具</h1>
+        <button id="selBtn" type="button">选择截图目录:</button>
+        <strong id="selDir">未选择</strong>
+        <a  id="openLink" href="#" onclick="showDir()">打开目录查看处理结果</a>
+        <button id="procssBtn" type="button">处理</button>
+        <pre id="pstatus"></pre>
+
+        <pre>
+        选择截图所在目录
+        注意子目录output默认当成识别结果目录，不会被处理
+        输出文件在output下
+        ocr.xlsx  -- 所有数据汇总，需要加筛选功能后人工检测识别异常数据
+                  -- 按产品分类 目录
+        品名+实付款 --分类copy图片到相关目录
+        </pre>
+    </div>
+    <script src="./render.js"></script>
+</body>
+</html>

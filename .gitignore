@@ -5,6 +5,7 @@ node_modules
 t.*
 tt.*
 *.pdf
-apiConfig.js
+config
+yarn.lock
 package-lock.json
 

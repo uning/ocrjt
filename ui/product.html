@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑数据</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        input[type="text"] {
+            padding: 5px;
+        }
+
+        button {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            z-index: 1000;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>编辑数据</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Keywords</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="dataBody">
+        </tbody>
+    </table>
+
+    <button onclick="addNewRow()">新增元素</button>
+
+    <!-- 模态框 -->
+    <div class="overlay" id="overlay"></div>
+    <div class="modal" id="myModal">
+        <label for="newKeyword">请输入新关键字:</label>
+        <input type="text" id="newKeyword">
+        <button onclick="confirmNewKeyword()">确定</button>
+        <button onclick="cancelNewKeyword()">取消</button>
+    </div>
+
+<!-- ...（之前的代码保持不变） ... -->
+
+<script>
+    // 模拟获取数据
+    let products = [
+        { name: '遵义红红茶', keywords: ['遵义红红'] },
+        { name: '石阡苔茶功夫红茶', keywords: ['苔茶功夫'] },
+        { name: '凤莎红茶', keywords: [] }
+    ];
+
+    window.addEventListener('DOMContentLoaded', async () => {
+        // 初始化页面时渲染数据
+        products = await electronAPI.getProducts() || products;
+
+        renderData();
+    });
+
+    // 渲染数据
+    function renderData(saveFile=false) {
+        const dataBody = document.getElementById('dataBody');
+        dataBody.innerHTML = '';
+
+        products.forEach((item, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="text" id="name_${index}" value="${item.name}"></td>
+                <td>
+                    ${item.keywords.map((keyword, keywordIndex) => `
+                        <div>
+                            <input type="text" id="keyword_${index}_${keywordIndex}" value="${keyword}">
+                            <button onclick="editKeyword(${index}, ${keywordIndex})">编辑</button>
+                            <button onclick="deleteKeyword(${index}, ${keywordIndex})">删除</button>
+                        </div>
+                    `).join('')}
+                </td>
+                <td>
+                    <button onclick="editRow(${index})">编辑</button>
+                    <button onclick="deleteRow(${index})">删除</button>
+                    <button onclick="openNewKeywordModal(${index})">新增关键字</button>
+                </td>
+            `;
+            dataBody.appendChild(row);
+        });
+        if(saveFile) electronAPI.saveProducts(products);
+    }
+
+    // 编辑行
+    function editRow(index) {
+        const nameInput = document.getElementById(`name_${index}`);
+        products[index].name = nameInput.value;
+        renderData(true);
+    }
+
+    // 编辑关键字
+    function editKeyword(rowIndex, keywordIndex) {
+        const editKeywordInput = document.getElementById(`keyword_${rowIndex}_${keywordIndex}`);
+        products[rowIndex].keywords[keywordIndex] = editKeywordInput.value.trim();
+        renderData(true);
+    }
+
+    // 删除关键字
+    function deleteKeyword(rowIndex, keywordIndex) {
+        products[rowIndex].keywords.splice(keywordIndex, 1);
+        renderData(true);
+    }
+
+    // 删除行
+    function deleteRow(index) {
+        products.splice(index, 1);
+        renderData(true);
+    }
+
+    // 打开新增关键字模态框
+    function openNewKeywordModal(index) {
+        const modal = document.getElementById('myModal');
+        const overlay = document.getElementById('overlay');
+        const newKeywordInput = document.getElementById('newKeyword');
+
+        newKeywordInput.value = ''; // 清空输入框
+        modal.style.display = 'block';
+        overlay.style.display = 'block';
+
+        // 点击确认按钮
+        window.confirmNewKeyword = function () {
+            const newKeyword = newKeywordInput.value.trim();
+            if (newKeyword) {
+                products[index].keywords.push(newKeyword);
+                renderData(true);
+            }
+            closeModal();
+        };
+
+        // 点击取消按钮
+        window.cancelNewKeyword = function () {
+            closeModal();
+        };
+
+        // 关闭模态框
+        function closeModal() {
+            modal.style.display = 'none';
+            overlay.style.display = 'none';
+            // 移除全局函数
+            delete window.confirmNewKeyword;
+            delete window.cancelNewKeyword;
+        }
+    }
+
+    // 模拟保存数据到文件
+    function saveProducts() {
+        // 这里你可以使用你的保存逻辑，例如 electronAPI.saveProducts(products);
+        console.log('保存数据到文件:', products);
+    }
+</script>
+
+
+</body>
+</html>

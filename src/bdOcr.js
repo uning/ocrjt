@@ -6,8 +6,8 @@ const path = require('path');
 const TOOLS = require('../tools');
 const ApiConfig = require('../apiConfig');
 
-const AK = ApiConfig.AK;
-const SK = ApiConfig.SK;
+const AK = ApiConfig.general.AK;
+const SK = ApiConfig.general.SK;
 let TOKEN = ''
 
 

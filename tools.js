@@ -3,6 +3,8 @@ const ApiConfig = require('./apiConfig');
 const fs = require('fs');
 const readline = require('readline');
 const path = require('path');
+const crypto = require('crypto');
+
 
 
 
@@ -82,13 +84,25 @@ module.exports = {
         const keys = {};
         const fileStream = fs.createReadStream(file);
         const rl = readline.createInterface({
-          input: fileStream,
-          crlfDelay: Infinity
+            input: fileStream,
+            crlfDelay: Infinity
         });
         for await (const line of rl) {
-          keys[line] = true;
+            keys[line] = true;
         }
         return keys;
-      }
+    },
 
+    hashPassword: function (password) {
+        // 使用 SHA-256 算法
+        const hash = crypto.createHash('sha256');
+
+        // 更新哈希对象的数据
+        hash.update(password);
+
+        // 获取十六进制编码的哈希值
+        const hashedPassword = hash.digest('hex').substring(0, 64);
+        return hashedPassword;
+    },
+    
 }
