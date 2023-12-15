@@ -34,7 +34,7 @@ module.exports = {
       config: {
         repository: {
           owner: 'uning',
-          name: 'github-repo-name'
+          name: 'ocrjt'
         },
         prerelease: false,
         draft: true
