@@ -39,10 +39,10 @@ const config = {
 };
 
 const txyFile = './config/txy.yaml';
-config.clientConfig = readYamlFileJson(txyFile);
+config.clientConfig = readYamlFileJson(txyFile)||{};
 
-config.general = readYamlFileJson(generalFile);
-config.products = readYamlFileJson(productsFile);
+config.general = readYamlFileJson(generalFile)||{};
+config.products = readYamlFileJson(productsFile)||[];
 config.saveProducts = function(pts){
   config.products = pts;
   saveJsonAsYaml(pts,productsFile);

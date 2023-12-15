@@ -11,7 +11,6 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish"
-
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
@@ -21,6 +20,7 @@
     "request": "^2.88.2",
     "tencentcloud-sdk-nodejs": "latest",
     "tencentcloud-sdk-nodejs-ocr": "^4.0.640",
+    "update-electron-app": "^3.0.0",
     "xlsx": "file:./vendor/xlsx-0.20.0.tgz"
   },
   "devDependencies": {

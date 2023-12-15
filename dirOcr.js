@@ -15,18 +15,6 @@ XLSX.set_fs(fs);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 /*
  sjh: '15698470326',
   xdr: '何宇轩',
@@ -39,34 +27,38 @@ XLSX.set_fs(fs);
   cpm: '路通讯新天地4D15|遵义红红茶|实付:￥608|送608积分|￥608|遵义红红茶|实付:￥800|送800积分|008夫|lX|',
   qtsbxx: '13:57|23.6|HD|4G|5G|56|KB/s|..l|ol|订单详情|待发货|何宇轩|15698470326|河南省郑州市管城回族区河南省郑州市管城区陇海|订单编号|11224710003333|下单时间|2023-07-12 13:54:03|商品总价|￥1408|运费|￥0|实付款￥1408|申请售后|联系客服|前往首页|'
 */
-async function processDir(imgdir,logFunc=console.log,platform = 'bd',method = 'pt',maxDepth = 5) {
+async function processDir(imgdir, logFunc = console.log, platform = 'bd', method = 'pt', maxDepth = 5) {
   if (!fs.existsSync(imgdir)) {
     logFunc(`截图目录 ${imgdir} 不存在`);
-    usage();
+    return;
   }
 
-  const generalConf = ApiConfig.general;
+  
+
+    const generalConf = ApiConfig.general;
+
+    const outputDir = path.join(imgdir, generalConf.OUTDIR||'output');
+
+    logFunc('process:',1);
 
 
-  const outputDir =  path.join(imgdir, generalConf.OUTDIR);
 
 
+    const fn = imgdir.replace(/\./g, '').replace(/\//g, '_').replace(/\\/, '_');
+    let sourceDir = imgdir; // 指定目录的路径
+    if (!path.isAbsolute(sourceDir))
+      sourceDir = path.resolve(imgdir);
 
 
+    const processedResultFile = path.join(outputDir, '.processed.txt'); // 输出文件的路径
 
-  const fn = imgdir.replace(/\./g, '').replace(/\//g, '_').replace(/\\/, '_');
-  let sourceDir = imgdir; // 指定目录的路径
-  if (!path.isAbsolute(sourceDir))
-    sourceDir = path.resolve(imgdir);
+    let outputFilePath = path.join(outputDir, 'ocr.csv'); // 输出文件的路径
+    let outputXlsFilePath = path.join(outputDir, 'ocr.xlsx'); // 输出文件的路径
+
+    const cacheDir = path.join(outputDir, 'cache');
+    Tools.mkdirp(cacheDir);
 
 
-  const processedResultFile = path.join(outputDir, '.processed.txt'); // 输出文件的路径
-
-  let outputFilePath = path.join(outputDir, 'ocr.csv'); // 输出文件的路径
-  let outputXlsFilePath = path.join(outputDir, 'ocr.xlsx'); // 输出文件的路径
-
-  const cacheDir = path.join(outputDir, 'cache');
-  Tools.mkdirp(cacheDir);
 
 
 
@@ -87,7 +79,7 @@ async function processDir(imgdir,logFunc=console.log,platform = 'bd',method = 'p
 
   //读取已经处理的文件
   let processedFiles = {}
-  
+
   fs.writeFileSync(outputFilePath, csvhead);
   fs.writeFileSync(outputFilePath + '.err', '');
 
@@ -97,7 +89,7 @@ async function processDir(imgdir,logFunc=console.log,platform = 'bd',method = 'p
 
   const imageFiles = [];
   Tools.readImageFiles(sourceDir, imageFiles, maxDepth);
-  const totalFileNum = imageFiles.length ;
+  const totalFileNum = imageFiles.length;
   logFunc('procees ', sourceDir, ': 总共 ' + imageFiles.length + ' 个文件');
   // return;
   // 遍历每个文件
@@ -148,7 +140,7 @@ async function processDir(imgdir,logFunc=console.log,platform = 'bd',method = 'p
       fs.appendFileSync(outputFilePath, csvData);
       wsData.push([ret.filename, ret.rq, ret._from, ret._to, , ret.xdr, ret.sjh, ret.shdz, ret.sfk, ret.ddh1, ret.xdsj, ret.spzj, ret.cpm, ret.qtsbxx]);
       fs.appendFileSync(processedResultFile, filePath + "\n");
-      logFunc('process file ok :',i+1,'/',totalFileNum, filePath, ret);
+      logFunc('process file ok :', i + 1, '/', totalFileNum, filePath, ret);
       await Tools.wait(200);
     } catch (err) {
       logFunc('process file err :', filePath, err);
@@ -182,6 +174,8 @@ async function processDir(imgdir,logFunc=console.log,platform = 'bd',method = 'p
 
 
   logFunc('处理完成');
+
+
 
 
 

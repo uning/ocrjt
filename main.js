@@ -106,8 +106,15 @@ app.whenReady().then(() => {
 
   //处理目录结果
   ipcMain.on('process-dir', async (_event, value) => {
+    customLog('process-dir:start', value) // will print value to Node console
+ try{
     await dirOcr.processDir(value, customLog);
-    console.log('process-dir', value) // will print value to Node console
+  } catch (err) {
+    customLog('process-dir err:', err)
+  }
+
+    customLog('process-dir:end', value) // will print value to Node console
+
     _event.reply('process-finished', value);
   })
 

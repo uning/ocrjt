@@ -4,6 +4,7 @@ const titleInput = document.getElementById('titleInput')
 
 document.getElementById('procssBtn').addEventListener('click', () => {
   const dir =   document.getElementById('selDir').innerText
+  console.log('process dir:web',dir)
   window.electronAPI.process(dir)
 })
 

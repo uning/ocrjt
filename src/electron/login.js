@@ -60,8 +60,9 @@ ipcMain.on('login', async (event, userData) => {
 
                 if(loginUser.autoLogin){
                     loginUser.password = userData.password;
-                    apiConfig.saveJsonAsYaml(loginUser,DATAFILE);
                 }
+                apiConfig.saveJsonAsYaml(loginUser,DATAFILE);
+
 
                 event.reply('login-success', loginUser);
                 loginWindow.close();
