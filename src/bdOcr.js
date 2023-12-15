@@ -48,7 +48,7 @@ function getFileContentAsBase64(path) {
 
 module.exports = {
 
-    general: async function (filename, cachedir, method = 'pt') {
+    general: async function (filename, cachedir, method = 'pt',logFunc = console.log) {
 
 
         const ret = {}
@@ -69,7 +69,7 @@ module.exports = {
         if (fs.existsSync(cachefile)) {
             result = JSON.parse(fs.readFileSync(cachefile));
             if(result){
-                console.log('api cache ok:',filename)
+                logFunc('api cache ok:',filename)
             }
         }
 
@@ -105,7 +105,7 @@ module.exports = {
             })
             if (result){
                 fs.writeFileSync(cachefile, JSON.stringify(result));
-                console.log('api ok',apimethod, filename, JSON.stringify(result));
+                logFunc('api ok',apimethod, filename, JSON.stringify(result));
             }
         }
 

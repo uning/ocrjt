@@ -14,7 +14,7 @@ const OcrClient = tencentcloud.ocr.v20181119.Client;
 // 密钥可前往官网控制台 https://console.cloud.tencent.com/cam/capi 进行获取
 
 module.exports = {
-  general: async function (filename, cachedir, method = 'pt') {
+  general: async function (filename, cachedir, method = 'pt',logFunc = console.log) {
 
     const ret = {};
     let result = false;
@@ -28,7 +28,7 @@ module.exports = {
     if (fs.existsSync(cachefile)) {
       result = JSON.parse(fs.readFileSync(cachefile));
       if (result) {
-        console.log('api cache ok:', apimethod, filename)
+        logFunc('api cache ok:', apimethod, filename)
       }
     }
 
@@ -48,7 +48,7 @@ module.exports = {
       result = await client[apimethod](params);
       if (result){
         fs.writeFileSync(cachefile, JSON.stringify(result));               
-       console.log('api ok',apimethod, filename, JSON.stringify(result));
+       logFunc('api ok',apimethod, filename, JSON.stringify(result));
       }
 
     }

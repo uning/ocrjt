@@ -107,7 +107,7 @@ async function processDir(imgdir, logFunc = console.log, platform = 'bd', method
     }
 
     try {
-      const ret = await OCR[platform].general(filePath, cacheDir, method);
+      const ret = await OCR[platform].general(filePath, cacheDir, method,logFunc);
 
       ret.filename = path.relative(outputDir, filePath);
       ret.fnflag = encodeURIComponent(ret.filename.substr(2));
