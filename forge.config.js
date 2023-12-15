@@ -27,4 +27,18 @@ module.exports = {
       config: {},
     },
   ],
+
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'uning',
+          name: 'github-repo-name'
+        },
+        prerelease: false,
+        draft: true
+      }
+    }
+  ]
 };
