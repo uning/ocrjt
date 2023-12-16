@@ -1,4 +1,8 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu } = require('electron/main')
+
+// run this as early in the main process as possible
+if (require('electron-squirrel-startup')) app.quit();
+
 const { exec } = require('child_process');
 const path = require('node:path')
 const os = require('node:os')

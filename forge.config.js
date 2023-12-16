@@ -34,7 +34,7 @@ module.exports = {
       // Path to the icon to use for the app in the DMG window
       name: '@electron-forge/maker-dmg',
       config: {
-        icon: '/path/to/icon.icns'
+        icon: './icons/icon.icns'
       }
     },
   ],
