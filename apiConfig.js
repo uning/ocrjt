@@ -2,9 +2,11 @@
 const fs = require('fs');
 const yaml = require('js-yaml');
 const tools = require('./tools');
+const path = require('path');
 
-const productsFile = './config/products.yaml';
-const generalFile = './config/general.yaml';
+
+const productsFile = path.join(__dirname,'config','products.yaml');
+const generalFile = path.join(__dirname,'config','general.yaml');
 
 
 // Function to read a YAML file and convert it to JSON
@@ -40,7 +42,7 @@ const config = {
 };
 
 //const txyFile = './config/txy.yaml';
-const ctxyFile = './config/txyc.txt';
+const ctxyFile = path.join(__dirname,'config','txyc.txt');
 
 //config.clientConfig = readYamlFileJson(txyFile);
 //tools.cryptoJson.saveToFile(config.clientConfig,ctxyFile);

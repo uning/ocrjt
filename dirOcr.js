@@ -140,9 +140,13 @@ async function processDir(imgdir, logFunc = console.log, platform = 'bd', method
        
       }
 
+      try {
        //解决链接上层目录文件打不开的问题
        ret.linkFilePath =path.join(linkDir, ret.fnflag);
        fs.copyFileSync(filePath, ret.linkFilePath);
+      }catch(err){
+        
+      }
 
 
 

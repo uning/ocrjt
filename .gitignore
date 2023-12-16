@@ -10,3 +10,4 @@ config
 yarn.lock
 package-lock.json
 .DS_Store
+yarn-error.log
