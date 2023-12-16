@@ -33,14 +33,14 @@ const cryptoJson = {
     saveToFile: function (data, filename) {
         const encryptedData = this.encryptData(data);
         fs.writeFileSync(filename, encryptedData, 'utf-8');
-        console.log('Data saved to file:', filename);
+        //console.log('Data saved to file:', filename);
     },
 
     // 从文件读取数据并解密
     readFromFile: function (filename) {
         const encryptedData = fs.readFileSync(filename, 'utf-8');
         const decryptedData = this.decryptData(encryptedData);
-        console.log('Data read from file:', filename);
+       // console.log('Data read from file:', filename);
         return decryptedData;
     }
 };

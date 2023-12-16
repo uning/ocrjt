@@ -20,6 +20,7 @@ loginUser.localInit = true;
 //创建登录窗口
 function createLoginWindow(callback) {
     loginWindow = new BrowserWindow({
+        icon: '../../icons/icon.png',
         width: 800,
         height: 600,
         webPreferences: {

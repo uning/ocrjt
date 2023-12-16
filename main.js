@@ -32,6 +32,7 @@ function createPageWindow(htmlPage, cached = true, openDevTools = true) {
     }
   }
   const win = new BrowserWindow({
+    icon: './icons/icon.png',
     width: 800,
     height: 600,
     webPreferences: {
@@ -62,6 +63,7 @@ function createWindow() {
     return;
   }
   const win = new BrowserWindow({
+    icon: './icons/icon.png',
     width: 800,
     height: 600,
     webPreferences: {
