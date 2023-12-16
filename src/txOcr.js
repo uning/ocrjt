@@ -120,7 +120,7 @@ module.exports = {
 
         }
       }
-      const pname = TOOLS.matchCpm(val);
+      const pname = TOOLS.matchCpm(val,ApiConfig.products);
       if (pname) {
         ret.cpmArr.push(pname);
         const cpsf = sitems[i+1].DetectedText||'';

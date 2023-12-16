@@ -40,8 +40,10 @@ function createPageWindow(htmlPage, cached = true, openDevTools = true) {
   })
   createdWindows[htmlPage] = win;
   win.loadFile(htmlPage);
-  if (openDevTools) {
-    win.webContents.openDevTools()
+  
+  if (process.env.NODE_ENV === 'development' || openDevTools) {
+    // 在开发模式下加载调试工具或其他开发配置
+    win.webContents.openDevTools({ mode: 'bottom' });
   }
 
   return win;
@@ -68,7 +70,7 @@ function createWindow() {
   })
 
   win.loadFile('index.html')
-  win.webContents.openDevTools()
+  win.webContents.openDevTools({ mode: 'bottom' })
   mainWindow = win
   return win;
 }
@@ -92,10 +94,10 @@ async function chooseDir() {
 }
 //打开目录
 async function openDir(dir) {
-  const { canceled, filePaths } = await dialog.showOpenDialog({ 
+  const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ['openDirectory'],
     defaultPath: dir,
-   })
+  })
   if (!canceled) {
     return filePaths[0]
   }
@@ -106,16 +108,16 @@ app.whenReady().then(() => {
 
   //处理目录结果
   ipcMain.on('process-dir', async (_event, value) => {
-    customLog('process-dir:start', value) // will print value to Node console
- try{
-    await dirOcr.processDir(value, customLog);
-  } catch (err) {
-    customLog('process-dir err:', err)
-  }
+    try {
+      customLog('process-dir:start', value) // will print value to Node console
+      const params = await dirOcr.processDir(value, customLog);
+      customLog('process-dir:end', value) // will print value to Node console
+      _event.reply('process-finished', params);
+    } catch (err) {
+      customLog('process-dir err:', err)
+    }
 
-    customLog('process-dir:end', value) // will print value to Node console
-
-    _event.reply('process-finished', value);
+  
   })
 
   ipcMain.on('save-products', (_event, data) => {
@@ -179,17 +181,7 @@ app.whenReady().then(() => {
 
         {
           click: () => createPageWindow('ui/product.html'),
-          label: '识别产品名'
-        },
-      ]
-    },
-    {
-      label: '配置',
-      submenu: [
-
-        {
-          click: () => createPageWindow('ui/product.html'),
-          label: '识别产品名'
+          label: '产品名'
         },
         {
           click: () => createPageWindow('ui/general.html'),

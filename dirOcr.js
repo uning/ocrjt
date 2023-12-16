@@ -53,10 +53,13 @@ async function processDir(imgdir, logFunc = console.log, platform = 'bd', method
     const processedResultFile = path.join(outputDir, '.processed.txt'); // 输出文件的路径
 
     let outputFilePath = path.join(outputDir, 'ocr.csv'); // 输出文件的路径
-    let outputXlsFilePath = path.join(outputDir, 'ocr.xlsx'); // 输出文件的路径
+    let outputXlsFilePath = path.join(outputDir, 'ocr.xlsx'); // 输出文件的
 
     const cacheDir = path.join(outputDir, 'cache');
     Tools.mkdirp(cacheDir);
+
+    const linkDir = path.join(outputDir, 'link');
+    Tools.mkdirp(linkDir);
 
 
 
@@ -66,7 +69,8 @@ async function processDir(imgdir, logFunc = console.log, platform = 'bd', method
 
   const csvhead = '文件,日期,来源,归属,备注,下单人,手机号,地址,实付款,订单号,下单时间,商品总价,商品名,其他信息' + "\n";
   const xlsxHead = ['文件(可点击打开)', '日期', '来源', '归属', '备注', '下单人', '手机号', '地址', '实付款', '订单号', '下单时间', '商品总价', '商品名', '其他信息'];
-  logFunc('params', {
+  
+  const params =   {
     platform,
     method,
     maxDepth,
@@ -75,7 +79,8 @@ async function processDir(imgdir, logFunc = console.log, platform = 'bd', method
     outputXlsFilePath,
     sourceDir,
     processedResultFile,
-  });
+  }
+  logFunc('params',params);
 
   //读取已经处理的文件
   let processedFiles = {}
@@ -88,7 +93,7 @@ async function processDir(imgdir, logFunc = console.log, platform = 'bd', method
 
 
   const imageFiles = [];
-  Tools.readImageFiles(sourceDir, imageFiles, maxDepth);
+  Tools.readImageFiles(sourceDir, imageFiles, maxDepth,generalConf.OUTDIR);
   const totalFileNum = imageFiles.length;
   logFunc('procees ', sourceDir, ': 总共 ' + imageFiles.length + ' 个文件');
   // return;
@@ -132,13 +137,18 @@ async function processDir(imgdir, logFunc = console.log, platform = 'bd', method
           }
           ret._to += to + '|';
         }
+       
       }
+
+       //解决链接上层目录文件打不开的问题
+       ret.linkFilePath =path.join(linkDir, ret.fnflag);
+       fs.copyFileSync(filePath, ret.linkFilePath);
 
 
 
       const csvData = `${ret.filename},${ret.rq},${ret._from},${ret._to},,${ret.xdr},${ret.sjh},${ret.shdz},${ret.sfk},${ret.ddh1},${ret.xdsj},${ret.spzj},${ret.cpm},${ret.qtsbxx}\n`;
       fs.appendFileSync(outputFilePath, csvData);
-      wsData.push([ret.filename, ret.rq, ret._from, ret._to, , ret.xdr, ret.sjh, ret.shdz, ret.sfk, ret.ddh1, ret.xdsj, ret.spzj, ret.cpm, ret.qtsbxx]);
+      wsData.push([ret.filename, ret.rq, ret._from, ret._to, , ret.xdr, ret.sjh, ret.shdz, ret.sfk, ret.ddh1, ret.xdsj, ret.spzj, ret.cpm, ret.qtsbxx,ret.linkFilePath]);
       fs.appendFileSync(processedResultFile, filePath + "\n");
       logFunc('process file ok :', i + 1, '/', totalFileNum, filePath, ret);
       await Tools.wait(200);
@@ -154,7 +164,7 @@ async function processDir(imgdir, logFunc = console.log, platform = 'bd', method
 
   for (i = 0; i < wsData.length; ++i) {
     crname = 'A' + (i + 1);
-    filename = wsData[i][0];
+    filename = wsData[i][14];
     ws[crname].l = {
       Target: "file:///" + filename,
       Tooltip: '点击打开' + filename
@@ -174,11 +184,7 @@ async function processDir(imgdir, logFunc = console.log, platform = 'bd', method
 
 
   logFunc('处理完成');
-
-
-
-
-
+  return params;
 }
 
 

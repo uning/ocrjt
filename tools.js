@@ -1,9 +1,49 @@
-
-const ApiConfig = require('./apiConfig');
 const fs = require('fs');
 const readline = require('readline');
 const path = require('path');
 const crypto = require('crypto');
+
+
+const cryptoJson = {
+    algorithm: 'aes-256-cbc',
+    key: Buffer.from('Your father'.padEnd(32, '\0'), 'binary'),
+    iv: Buffer.from('is here'.padEnd(16, '\0'), 'binary'), // 16 bytes IV for added security
+
+
+
+
+
+    // 加密函数
+    encryptData: function (data) {
+        const cipher = crypto.createCipheriv(this.algorithm, Buffer.from(this.key), this.iv);
+        let encrypted = cipher.update(JSON.stringify(data), 'utf-8', 'hex');
+        encrypted += cipher.final('hex');
+        return encrypted;
+    },
+
+    // 解密函数
+    decryptData: function (encryptedData) {
+        const decipher = crypto.createDecipheriv(this.algorithm, Buffer.from(this.key), this.iv);
+        let decrypted = decipher.update(encryptedData, 'hex', 'utf-8');
+        decrypted += decipher.final('utf-8');
+        return JSON.parse(decrypted);
+    },
+
+    // 将加密后的数据存入文件
+    saveToFile: function (data, filename) {
+        const encryptedData = this.encryptData(data);
+        fs.writeFileSync(filename, encryptedData, 'utf-8');
+        console.log('Data saved to file:', filename);
+    },
+
+    // 从文件读取数据并解密
+    readFromFile: function (filename) {
+        const encryptedData = fs.readFileSync(filename, 'utf-8');
+        const decryptedData = this.decryptData(encryptedData);
+        console.log('Data read from file:', filename);
+        return decryptedData;
+    }
+};
 
 
 
@@ -14,8 +54,8 @@ const crypto = require('crypto');
  * 
  **/
 module.exports = {
-    matchCpm: function (name) {
-        const ps = ApiConfig.products;
+    cryptoJson,
+    matchCpm: function (name,ps) {
         let find = false;
         for (let i = 0; i < ps.length; ++i) {
             if (name.includes(ps[i].name)) {
@@ -61,7 +101,7 @@ module.exports = {
     /*
     读取文件夹dir下文件夹
     */
-    readImageFiles: function (dir, results, maxDepth = 2) {
+    readImageFiles: function (dir, results, maxDepth = 2,ignoreDir) {
         const queue = [{ dir, depth: 0 }];
         while (queue.length > 0) {
             const { dir, depth } = queue.shift();
@@ -70,7 +110,7 @@ module.exports = {
             files.forEach(file => {
                 const filePath = path.join(dir, file);
                 const stat = fs.statSync(filePath);
-                if (stat && stat.isDirectory() && file != ApiConfig.OUTDIR) {
+                if (stat && stat.isDirectory() && file != ignoreDir) {
                     queue.push({ dir: filePath, depth: depth + 1 });
                 } else {
                     if (file.toLocaleLowerCase().match(/\.(jpg|jpeg|png|gif)$/)) {
@@ -104,5 +144,5 @@ module.exports = {
         const hashedPassword = hash.digest('hex').substring(0, 64);
         return hashedPassword;
     },
-    
+
 }

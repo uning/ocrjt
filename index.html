@@ -63,6 +63,10 @@
             padding: 10px;
             border-radius: 4px;
         }
+        .debug { color: gray; }
+        .info { color: black; }
+        .warn { color: orange; }
+        .error { color: red; }
         #openLink {
             display:none;
         }
@@ -80,18 +84,23 @@
         <button id="selBtn" type="button">选择截图目录:</button>
         <strong id="selDir">未选择</strong>
         <a  id="openLink" href="#" onclick="showDir()">打开目录查看处理结果</a>
+        <input type="hidden" id="outDir"/>
         <button id="procssBtn" type="button">处理</button>
-        <pre id="pstatus"></pre>
 
+        <div id="log-container"></div>
+        <pre id="pstatus"></pre>
         <pre>
-        选择截图所在目录
+        选择截图所在目录，
         注意子目录output默认当成识别结果目录，不会被处理
-        输出文件在output下
-        ocr.xlsx  -- 所有数据汇总，需要加筛选功能后人工检测识别异常数据
-                  -- 按产品分类 目录
-        品名+实付款 --分类copy图片到相关目录
+        <a   href="./help/help.html" target="_blank" >详细帮助</a>
+
         </pre>
+        
     </div>
+    <!-- 
+    <script src="./ui/js/loglevel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    -->
     <script src="./render.js"></script>
 </body>
 </html>

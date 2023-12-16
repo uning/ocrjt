@@ -6,7 +6,7 @@
   "main": "main.js",
   "license": "MIT",
   "scripts": {
-    "erun": "electron .",
+    "erun": "NODE_ENV=development electron .",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",

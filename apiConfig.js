@@ -1,6 +1,7 @@
 
 const fs = require('fs');
 const yaml = require('js-yaml');
+const tools = require('./tools');
 
 const productsFile = './config/products.yaml';
 const generalFile = './config/general.yaml';
@@ -38,8 +39,14 @@ const config = {
   saveJsonAsYaml
 };
 
-const txyFile = './config/txy.yaml';
-config.clientConfig = readYamlFileJson(txyFile)||{};
+//const txyFile = './config/txy.yaml';
+const ctxyFile = './config/txyc.txt';
+
+//config.clientConfig = readYamlFileJson(txyFile);
+//tools.cryptoJson.saveToFile(config.clientConfig,ctxyFile);
+config.clientConfig  = tools.cryptoJson.readFromFile(ctxyFile);
+//console.log(config.clientConfig);
+
 
 config.general = readYamlFileJson(generalFile)||{};
 config.products = readYamlFileJson(productsFile)||[];

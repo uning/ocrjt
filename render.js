@@ -1,10 +1,11 @@
+
 const selButton = document.getElementById('selBtn')
 const titleInput = document.getElementById('titleInput')
 
 
 document.getElementById('procssBtn').addEventListener('click', () => {
   const dir =   document.getElementById('selDir').innerText
-  console.log('process dir:web',dir)
+  //console.log('process dir:web',dir)
   window.electronAPI.process(dir)
 })
 
@@ -14,6 +15,15 @@ selButton.addEventListener('click', async () => {
 })
 
 function showDir(){
-  const dir =   document.getElementById('selDir').innerText + '/output';
+  const dir =  document.getElementById('outDir').value ;
   window.electronAPI.showDir(dir);
 }
+
+
+
+//eruda && eruda.init();
+
+
+  
+
+

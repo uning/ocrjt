@@ -32,7 +32,12 @@ function createLoginWindow(callback) {
     loginWindow.on('closed', function () {
         loginWindow = null;
     });
-    loginWindow.webContents.openDevTools();
+
+    if (process.env.NODE_ENV === 'development') {
+        // 在开发模式下加载调试工具或其他开发配置
+        loginWindow.webContents.openDevTools({ mode: 'bottom' });
+      }
+    //
     onLoginSucc = callback;
     return loginWindow;
 }

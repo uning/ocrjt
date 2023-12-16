@@ -3,75 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>微信聊天记录图片处理说明</title>
-    <style>
-        /* Add any additional styling here */
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 20px;
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-        }
-    </style>
+    <title>截图对单工具使用帮助</title>
 </head>
 <body>
-    <h1>保存微信聊天记录图片到电脑</h1>
 
-    <p>找到电脑版微信设置，迁移与备份，打开。将手机和电脑连到同一wifi，手机微信上选择要同步的聊天记录。</p>
+    <h1>截图对单工具使用帮助</h1>
 
-    <p>将同步的聊天记录，选择聊天记录管理，<img src="help/image.png" alt="Image">保存到电脑。</p>
+    <h2>1.配置产品名和其他（只是为了更精准识别产品名）</h2>
 
-    <h1>运行</h1>
+    <p>点击菜单-&gt;配置-&gt;产品名，注意以第一匹配到的关键词的，作为产品名<br>
+        <img src="./settingProducts.png" />
+    品名+实付款 --分类copy图片到相关目录精确<br>
+    配置后，图片归类到目录更准确
+    </p>
 
-    <ol>
-        <li>复制 <code>apiConfig.example.js</code> 为 <code>apiConfig.js</code>。</li>
-        <li>配置 API 参数在 <code>apiConfig.js</code>。</li>
-        <li>配置需精准识别品名的商品名在 <code>apiConfig.js</code>。
-            <ol>
-                <li>在 <code>apiConfig.js</code>，<code>products</code>，配置要精准识别的产品名称。</li>
-            </ol>
-        </li>
-    </ol>
+    <h2>保存截图到目录</h2>
 
-    <p>注意子目录 <code>output</code> 默认当成识别结果目录，不会被处理。输出文件在 <code>output</code> 下：</p>
-    
-    <ul>
-        <li><code>ocr.xlsx</code> -- 所有数据汇总，需要加筛选功能后人工检测识别异常数据。</li>
-        <li><code>cp</code> -- 按产品分类目录，品名+实付款 -- 分类复制图片到相关目录。</li>
-    </ul>
+    <p>将需要识别的图片保存到电脑文件目录（可以有多个子文件夹），注意名output的会被忽略，用来保存结果</p>
 
-    <h1>如何检查数据</h1>
+    <h2>运行程序</h2>
+
+    <p>打开程序，运行，等待完成后，检查数据</p>
+
+    <h2>如何检查数据</h2>
 
     <ol>
-        <li>打开 <code>ocr.xlsx</code> 选中表头，菜单 数据  自动筛选。<img src="./image.png" alt="Image"></li>
-        <li>高亮重复项手机号，检查所有手机号重复的记录或为空的记录。</li>
-        <li>检查实付款字段，统计每个总价的全部订单数。</li>
-        <li>检查商品名，包含商品名是否和检查的一致。</li>
-        <li>根据归属筛选图片，发给对应厂商。</li>
-        <li>没有按归属区分的记录需要人工处理。</li>
+        <li>打开ocr.xlsx选中表头，菜单 数据  自动筛选</li>
+        <li>高亮重复项手机号，检查所有手机号重复的记录或为空的记录</li>
+        <li>检查实付款字段，统计每个总价的全部订单数</li>
+        <li>检查商品名，包含商品名是否和检查的一直</li>
+        <li>根据归属筛选图片，发给对应厂商</li>
+        <li>没有按归属区分的记录需要人工处理</li>
     </ol>
 
-    <h1>txyocr</h1>
-
-    <p>在输出目录下，将截图目录扁平化建立目录，将识别结果写入该目录下 <code>ocr.xlst</code>, <code>ocr.csv</code>。出错的文件写入 <code>ocr.csv.err</code>.</p>
-
-    <p>运行命令：<code>node ${__filename} 713龚洋/test bd pt</code></p>
-
-    <p>结果写入 <code>${__dirname}/output/713龚洋_test</code>.</p>
-
-    <p>运行命令：<code>node ${__filename} 目录 方法 输出目录 处理子目录层级</code></p>
-
-    <ul>
-        <li><strong>目录</strong> --- 截图目录</li>
-        <li><strong>方法</strong> --- <code>bd</code> (百度), <code>tx</code> (腾讯) (默认 <code>bd</code>)</li>
-        <li><strong>输出目录</strong> --- 输出结果目录（默认 截图目录/output）</li>
-        <li><strong>处理子目录层级</strong> --- 默认 2</li>
-    </ul>
-
-    <p>生成 HTML 文件。</p>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>编辑数据</title>
+    <title>设置产品</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -64,7 +64,7 @@
 </head>
 <body>
 
-    <h1>编辑数据</h1>
+    <h1>设置要识别的产品名</h1>
 
     <table>
         <thead>
@@ -78,7 +78,7 @@
         </tbody>
     </table>
 
-    <button onclick="addNewRow()">新增元素</button>
+    <button onclick="addNewRow()">新增产品</button>
 
     <!-- 模态框 -->
     <div class="overlay" id="overlay"></div>
@@ -119,13 +119,13 @@
                     ${item.keywords.map((keyword, keywordIndex) => `
                         <div>
                             <input type="text" id="keyword_${index}_${keywordIndex}" value="${keyword}">
-                            <button onclick="editKeyword(${index}, ${keywordIndex})">编辑</button>
+                            <button onclick="editKeyword(${index}, ${keywordIndex})">保存</button>
                             <button onclick="deleteKeyword(${index}, ${keywordIndex})">删除</button>
                         </div>
                     `).join('')}
                 </td>
                 <td>
-                    <button onclick="editRow(${index})">编辑</button>
+                    <button onclick="editRow(${index})">保存</button>
                     <button onclick="deleteRow(${index})">删除</button>
                     <button onclick="openNewKeywordModal(${index})">新增关键字</button>
                 </td>
