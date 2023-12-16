@@ -12,7 +12,11 @@ module.exports = {
         // An URL to an ICO file to use as the application icon (displayed in Control Panel > Programs and Features).
         iconUrl: 'https://lowcode-2gexp0oub13a679d-1253647391.tcloudbaseapp.com/resources/2023-12/lowcode-1522476',
         // The ICO file to use as the icon for the generated Setup.exe
-        setupIcon: './icons/icon.ico'
+        setupIcon: './icons/icon.ico',
+        "authors": "tingkun",
+        "noMsi": true, // 禁用 MSI 安装包
+        allowToChangeInstallationDirectory: true // 允许更改安装目录
+
       },
     },
     {
