@@ -30,13 +30,7 @@ module.exports = {
       name: '@electron-forge/maker-rpm',
       config: {},
     },
-    {
-      // Path to the icon to use for the app in the DMG window
-      name: '@electron-forge/maker-dmg',
-      config: {
-        icon: './icons/icon.icns'
-      }
-    },
+  
   ],
   plugins: [
     {
