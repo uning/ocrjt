@@ -5,17 +5,18 @@ const TOOLS = require('../../tools');
 const weda = require('../txWeda');
 const apiConfig = require('../../apiConfig');
 
-const { log } = require('node:console');
-const { validateHeaderName } = require('node:http');
 
-const DATAFILE =path.join(__dirname,'../../config/loginUser.yaml');
+let onLoginSucc,loginWindow;
 
-
-let loginWindow,onLoginSucc;
-const loginUser = apiConfig.readYamlFileJson(DATAFILE) || {};
-
-loginUser.localInit = true;
-
+function getLoginUser(){
+    if (_login.loginUser)
+        return _login.loginUser;
+    const filePath = path.join(apiConfig.saveDir, 'loginUser.yaml');
+    _login.loginUser = apiConfig.readYamlFileJson(filePath) || {};
+    _login.loginUser.localInit = true;
+    console.log('handleLoginUser', _login.loginUser)
+    return _login.loginUser
+}
 
 //创建登录窗口
 function createLoginWindow(callback) {
@@ -37,37 +38,40 @@ function createLoginWindow(callback) {
     if (process.env.NODE_ENV === 'development') {
         // 在开发模式下加载调试工具或其他开发配置
         loginWindow.webContents.openDevTools({ mode: 'bottom' });
-      }
+    }
     //
     onLoginSucc = callback;
     return loginWindow;
 }
 
-module.exports = {
+const _login = {
     createLoginWindow,
     loginWindow,
-    loginUser,
-
+    getLoginUser,
 }
+
+module.exports = _login;
 
 //处理登录
 ipcMain.on('login', async (event, userData) => {
     try {
+        const loginUser = getLoginUser();
         // const response = { data: { username: 'tingkun', nickname: '廷坤' } }//await axios.post('http://example.com/login', userData);
         const response = await weda.find("yhbs eq '" + userData.username + "'", 'dlyhb_pc7zmvv');
         if (response && response.value && response.value.length > 0) {
             const ru = response.value[0];
-            console.log('login ru:',userData,ru);
-            if (!ru.password  || ru.password === TOOLS.hashPassword(userData.password)) {
+            console.log('login ru:', userData, ru);
+            if (!ru.password || ru.password === TOOLS.hashPassword(userData.password)) {
                 loginUser.username = ru.yhbs;
                 loginUser.nickname = ru.yhnc;
                 loginUser.autoLogin = userData.autoLogin;
                 loginUser.localInit = false;
 
-                if(loginUser.autoLogin){
+                if (loginUser.autoLogin) {
                     loginUser.password = userData.password;
                 }
-                apiConfig.saveJsonAsYaml(loginUser,DATAFILE);
+                const filePath = path.join(apiConfig.saveDir, 'loginUser.yaml');
+                apiConfig.saveJsonAsYaml(loginUser, filePath);
 
 
                 event.reply('login-success', loginUser);
@@ -86,8 +90,7 @@ ipcMain.on('login', async (event, userData) => {
     }
 });
 
-ipcMain.handle('loginUser', () => {
-    console.log('handleLoginUser', loginUser)
-    return loginUser
-})
+
+
+ipcMain.handle('loginUser', getLoginUser);
 

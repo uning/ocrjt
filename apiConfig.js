@@ -5,15 +5,12 @@ const tools = require('./tools');
 const path = require('path');
 
 
-const productsFile = path.join(__dirname,'config','products.yaml');
-const generalFile = path.join(__dirname,'config','general.yaml');
-
-
 // Function to read a YAML file and convert it to JSON
-function readYamlFileJson(filePath = productsFile) {
+function readYamlFileJson(filePath ) {
     try {
         const yamlContent = fs.readFileSync(filePath, 'utf8');
         const jsonData = yaml.load(yamlContent);
+        console.log(`JSON read   from ${filePath}`);
         return jsonData;
     } catch (error) {
         console.error(`Error reading YAML file: ${error.message}`);
@@ -22,7 +19,7 @@ function readYamlFileJson(filePath = productsFile) {
 }
 
 // Function to convert JSON to YAML and save it to a file
-function saveJsonAsYaml(jsonData,filePath = productsFile) {
+function saveJsonAsYaml(jsonData,filePath ) {
     try {
         const yamlContent = yaml.dump(jsonData);
         fs.writeFileSync(filePath, yamlContent, 'utf8');
@@ -38,31 +35,48 @@ function saveJsonAsYaml(jsonData,filePath = productsFile) {
 
 const config = {
   readYamlFileJson,
-  saveJsonAsYaml
+  saveJsonAsYaml,
+  saveDir:path.join(__dirname,'config'),
 };
 
-//const txyFile = './config/txy.yaml';
-const ctxyFile = path.join(__dirname,'config','txyc.txt');
 
-//config.clientConfig = readYamlFileJson(txyFile);
-//tools.cryptoJson.saveToFile(config.clientConfig,ctxyFile);
-config.clientConfig  = tools.cryptoJson.readFromFile(ctxyFile);
-//console.log(config.clientConfig);
+config.getClientConfig = function(){
+  if(config.clientConfig) {
+    return config.clientConfig;
+  }
+  const ctxyFile = path.join(__dirname,'config','txyc.txt');
+  return config.clientConfig  = tools.cryptoJson.readFromFile(ctxyFile);
+}
 
 
-config.general = readYamlFileJson(generalFile)||{};
-config.products = readYamlFileJson(productsFile)||[];
 config.saveProducts = function(pts){
   config.products = pts;
-  saveJsonAsYaml(pts,productsFile);
+  const filePath = path.join(config.saveDir,'products.yaml');
+  saveJsonAsYaml(pts,filePath);
 }
-config.readYamlFileJson = readYamlFileJson;
-config.saveJsonAsYaml = saveJsonAsYaml;
+
+config.getProducts = function(){
+  if(config.products) {
+    return config.products;
+  }
+  const filePath = path.join(config.saveDir,'products.yaml');
+  return config.products=readYamlFileJson(filePath)||[];
+}
+
+config.getGeneral = function(){
+  if(config.general) {
+    return config.general;
+  }
+  const filePath = path.join(config.saveDir,'general.yaml');
+  return config.general=readYamlFileJson(filePath)||{};
+}
 
 config.saveGeneral = function(data){
   config.general = data;
-  saveJsonAsYaml(data,generalFile);
+  const filePath = path.join(config.saveDir,'general.yaml');
+  saveJsonAsYaml(data,filePath);
 }
 
 
 module.exports =  config;
+//console.log('apiConfig: getClientConfig',config.getClientConfig());

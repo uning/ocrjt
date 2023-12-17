@@ -4,10 +4,9 @@ const fs = require('fs');
 const path = require('path');
 
 const TOOLS = require('../tools');
-const ApiConfig = require('../apiConfig');
+const apiConfig = require('../apiConfig');
 
-const AK = ApiConfig.general.AK;
-const SK = ApiConfig.general.SK;
+
 let TOKEN = ''
 
 
@@ -20,6 +19,9 @@ let TOKEN = ''
 async function getAccessToken() {
 
     if (TOKEN != '') { return TOKEN; }
+    const conf = apiConfig.getGeneral();
+    const { AK, SK } = conf;
+    console.log('bdOcr:',{ AK, SK });
 
     let options = {
         'method': 'POST',
@@ -48,10 +50,11 @@ function getFileContentAsBase64(path) {
 
 module.exports = {
 
-    general: async function (filename, cachedir, method = 'pt',logFunc = console.log) {
+    general: async function (filename, cachedir, method = 'pt', logFunc = console.log) {
 
 
         const ret = {}
+        const pts = apiConfig.getProducts();
 
         let result = false;
         let apimethod = 'general_basic'
@@ -65,15 +68,15 @@ module.exports = {
             apimethod = 'accurate_basic'
         }
 
-        const cachefile = path.join(cachedir,encodeURIComponent(filename) + apimethod+'.json');
+        const cachefile = path.join(cachedir, encodeURIComponent(filename) + apimethod + '.json');
         if (fs.existsSync(cachefile)) {
             result = JSON.parse(fs.readFileSync(cachefile));
-            if(result){
-                logFunc('api cache ok:',filename)
+            if (result) {
+                logFunc('api cache ok:', filename)
             }
         }
 
-     
+
 
 
 
@@ -92,9 +95,9 @@ module.exports = {
                 'paragraph': 'true',
                 'probability': 'true'
             };
-    
-         
-    
+
+
+
             options.url = 'https://aip.baidubce.com/rest/2.0/ocr/v1/' + apimethod + '?access_token=' + await getAccessToken(),
                 options.form = form;
             result = await new Promise((resolve, reject) => {
@@ -103,9 +106,9 @@ module.exports = {
                     else { resolve(JSON.parse(response.body)) }
                 })
             })
-            if (result){
+            if (result) {
                 fs.writeFileSync(cachefile, JSON.stringify(result));
-                logFunc('api ok',apimethod, filename, JSON.stringify(result));
+                logFunc('api ok', apimethod, filename, JSON.stringify(result));
             }
         }
 
@@ -172,10 +175,10 @@ module.exports = {
                 }
             }
 
-            const pname = TOOLS.matchCpm(val,ApiConfig.products);
+            const pname = TOOLS.matchCpm(val, pts);
             if (pname) {
                 ret.cpmArr.push(pname);
-                const cpsf = sitems[i+1].words||'';
+                const cpsf = sitems[i + 1].words || '';
                 ret.cpSfArr.push(cpsf.replace(/\D/g, ""));
             }
             allIdx[val] = i;    //记录文字出现标号

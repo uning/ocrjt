@@ -17,6 +17,7 @@ module.exports = {
   general: async function (filename, cachedir, method = 'pt',logFunc = console.log) {
 
     const ret = {};
+    const pts = ApiConfig.getProducts();
     let result = false;
     let apimethod = 'GeneralBasicOCR'
     if (method === 'acc') {
@@ -43,7 +44,7 @@ module.exports = {
       };
 
       // 实例化要请求产品的client对象,clientProfile是可选的
-      const client = new OcrClient(ApiConfig.clientConfig);
+      const client = new OcrClient(ApiConfig.getClientConfig());
 
       result = await client[apimethod](params);
       if (result){
@@ -120,7 +121,7 @@ module.exports = {
 
         }
       }
-      const pname = TOOLS.matchCpm(val,ApiConfig.products);
+      const pname = TOOLS.matchCpm(val,pts);
       if (pname) {
         ret.cpmArr.push(pname);
         const cpsf = sitems[i+1].DetectedText||'';

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,11 +17,14 @@
             margin-bottom: 20px;
         }
 
-        table, th, td {
+        table,
+        th,
+        td {
             border: 1px solid #ddd;
         }
 
-        th, td {
+        th,
+        td {
             padding: 10px;
             text-align: left;
         }
@@ -62,6 +66,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <h1>设置要识别的产品名</h1>
@@ -89,31 +94,31 @@
         <button onclick="cancelNewKeyword()">取消</button>
     </div>
 
-<!-- ...（之前的代码保持不变） ... -->
+    <!-- ...（之前的代码保持不变） ... -->
 
-<script>
-    // 模拟获取数据
-    let products = [
-        { name: '遵义红红茶', keywords: ['遵义红红'] },
-        { name: '石阡苔茶功夫红茶', keywords: ['苔茶功夫'] },
-        { name: '凤莎红茶', keywords: [] }
-    ];
+    <script>
+        // 模拟获取数据
+        let products = [
+            { name: '遵义红红茶', keywords: ['遵义红红'] },
+            { name: '石阡苔茶功夫红茶', keywords: ['苔茶功夫'] },
+            { name: '凤莎红茶', keywords: [] }
+        ];
 
-    window.addEventListener('DOMContentLoaded', async () => {
-        // 初始化页面时渲染数据
-        products = await electronAPI.getProducts() || products;
+        window.addEventListener('DOMContentLoaded', async () => {
+            // 初始化页面时渲染数据
+            products = await electronAPI.getProducts() || products;
 
-        renderData();
-    });
+            renderData();
+        });
 
-    // 渲染数据
-    function renderData(saveFile=false) {
-        const dataBody = document.getElementById('dataBody');
-        dataBody.innerHTML = '';
+        // 渲染数据
+        function renderData(saveFile = false) {
+            const dataBody = document.getElementById('dataBody');
+            dataBody.innerHTML = '';
 
-        products.forEach((item, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
+            products.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
                 <td><input type="text" id="name_${index}" value="${item.name}"></td>
                 <td>
                     ${item.keywords.map((keyword, keywordIndex) => `
@@ -130,79 +135,87 @@
                     <button onclick="openNewKeywordModal(${index})">新增关键字</button>
                 </td>
             `;
-            dataBody.appendChild(row);
-        });
-        if(saveFile) electronAPI.saveProducts(products);
-    }
-
-    // 编辑行
-    function editRow(index) {
-        const nameInput = document.getElementById(`name_${index}`);
-        products[index].name = nameInput.value;
-        renderData(true);
-    }
-
-    // 编辑关键字
-    function editKeyword(rowIndex, keywordIndex) {
-        const editKeywordInput = document.getElementById(`keyword_${rowIndex}_${keywordIndex}`);
-        products[rowIndex].keywords[keywordIndex] = editKeywordInput.value.trim();
-        renderData(true);
-    }
-
-    // 删除关键字
-    function deleteKeyword(rowIndex, keywordIndex) {
-        products[rowIndex].keywords.splice(keywordIndex, 1);
-        renderData(true);
-    }
-
-    // 删除行
-    function deleteRow(index) {
-        products.splice(index, 1);
-        renderData(true);
-    }
-
-    // 打开新增关键字模态框
-    function openNewKeywordModal(index) {
-        const modal = document.getElementById('myModal');
-        const overlay = document.getElementById('overlay');
-        const newKeywordInput = document.getElementById('newKeyword');
-
-        newKeywordInput.value = ''; // 清空输入框
-        modal.style.display = 'block';
-        overlay.style.display = 'block';
-
-        // 点击确认按钮
-        window.confirmNewKeyword = function () {
-            const newKeyword = newKeywordInput.value.trim();
-            if (newKeyword) {
-                products[index].keywords.push(newKeyword);
-                renderData(true);
-            }
-            closeModal();
-        };
-
-        // 点击取消按钮
-        window.cancelNewKeyword = function () {
-            closeModal();
-        };
-
-        // 关闭模态框
-        function closeModal() {
-            modal.style.display = 'none';
-            overlay.style.display = 'none';
-            // 移除全局函数
-            delete window.confirmNewKeyword;
-            delete window.cancelNewKeyword;
+                dataBody.appendChild(row);
+            });
+            if (saveFile) electronAPI.saveProducts(products);
         }
-    }
 
-    // 模拟保存数据到文件
-    function saveProducts() {
-        // 这里你可以使用你的保存逻辑，例如 electronAPI.saveProducts(products);
-        console.log('保存数据到文件:', products);
-    }
-</script>
+        // 编辑行
+        function editRow(index) {
+            const nameInput = document.getElementById(`name_${index}`);
+            products[index].name = nameInput.value;
+            renderData(true);
+        }
+
+        // 编辑关键字
+        function editKeyword(rowIndex, keywordIndex) {
+            const editKeywordInput = document.getElementById(`keyword_${rowIndex}_${keywordIndex}`);
+            products[rowIndex].keywords[keywordIndex] = editKeywordInput.value.trim();
+            renderData(true);
+        }
+
+        // 删除关键字
+        function deleteKeyword(rowIndex, keywordIndex) {
+            products[rowIndex].keywords.splice(keywordIndex, 1);
+            renderData(true);
+        }
+
+        // 删除行
+        function deleteRow(index) {
+            products.splice(index, 1);
+            renderData(true);
+        }
+
+        // 打开新增关键字模态框
+        function openNewKeywordModal(index) {
+            const modal = document.getElementById('myModal');
+            const overlay = document.getElementById('overlay');
+            const newKeywordInput = document.getElementById('newKeyword');
+
+            newKeywordInput.value = ''; // 清空输入框
+            modal.style.display = 'block';
+            overlay.style.display = 'block';
+
+            // 点击确认按钮
+            window.confirmNewKeyword = function () {
+                const newKeyword = newKeywordInput.value.trim();
+                if (newKeyword) {
+                    products[index].keywords.push(newKeyword);
+                    renderData(true);
+                }
+                closeModal();
+            };
+
+            // 点击取消按钮
+            window.cancelNewKeyword = function () {
+                closeModal();
+            };
+
+            // 关闭模态框
+            function closeModal() {
+                modal.style.display = 'none';
+                overlay.style.display = 'none';
+                // 移除全局函数
+                delete window.confirmNewKeyword;
+                delete window.cancelNewKeyword;
+            }
+        }
+
+        // 添加新元素
+        function addNewRow() {
+            const newItem = { name: '', keywords: [] };
+            products.push(newItem);
+            renderData();
+        }
+
+        // 模拟保存数据到文件
+        function saveProducts() {
+            // 这里你可以使用你的保存逻辑，例如 electronAPI.saveProducts(products);
+            console.log('保存数据到文件:', products);
+        }
+    </script>
 
 
 </body>
+
 </html>

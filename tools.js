@@ -40,7 +40,7 @@ const cryptoJson = {
     readFromFile: function (filename) {
         const encryptedData = fs.readFileSync(filename, 'utf-8');
         const decryptedData = this.decryptData(encryptedData);
-       // console.log('Data read from file:', filename);
+        // console.log('Data read from file:', filename,decryptedData,encryptedData);
         return decryptedData;
     }
 };

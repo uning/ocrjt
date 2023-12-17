@@ -5,6 +5,10 @@ const titleInput = document.getElementById('titleInput')
 
 document.getElementById('procssBtn').addEventListener('click', () => {
   const dir =   document.getElementById('selDir').innerText
+  if(dir === '未选择'){
+    alert("请选择目录");
+    return;
+  }
   //console.log('process dir:web',dir)
   window.electronAPI.process(dir)
 })

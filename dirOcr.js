@@ -35,7 +35,7 @@ async function processDir(imgdir, logFunc = console.log, platform = 'bd', method
 
   
 
-    const generalConf = ApiConfig.general;
+    const generalConf = ApiConfig.getGeneral()||{};
 
     const outputDir = path.join(imgdir, generalConf.OUTDIR||'output');
 
@@ -145,7 +145,7 @@ async function processDir(imgdir, logFunc = console.log, platform = 'bd', method
        ret.linkFilePath =path.join(linkDir, ret.fnflag);
        fs.copyFileSync(filePath, ret.linkFilePath);
       }catch(err){
-        
+
       }
 
 

@@ -7,8 +7,21 @@ const { exec } = require('child_process');
 const path = require('node:path')
 const os = require('node:os')
 const dirOcr = require('./dirOcr');
-const { createLoginWindow, loginWindow, loginUser } = require('./src/electron/login');
+const tools = require('./tools');
+const { createLoginWindow, getLoginUser } = require('./src/electron/login');
 const apiConfig = require('./apiConfig');
+
+//创建存放配置目录
+try {
+  const configPath = path.join(app.getPath('home'), '.ocrjt');
+  console.log('app init: configPath:', configPath);
+  apiConfig.saveDir = configPath;
+  tools.mkdirp(configPath);
+} catch (err) {
+}
+
+
+
 
 
 
@@ -45,7 +58,7 @@ function createPageWindow(htmlPage, cached = true, openDevTools = true) {
   })
   createdWindows[htmlPage] = win;
   win.loadFile(htmlPage);
-  
+
   if (process.env.NODE_ENV === 'development' || openDevTools) {
     // 在开发模式下加载调试工具或其他开发配置
     win.webContents.openDevTools({ mode: 'bottom' });
@@ -62,7 +75,8 @@ function createPageWindow(htmlPage, cached = true, openDevTools = true) {
  * @returns 
  */
 function createWindow() {
-  if (loginUser.localInit) {
+  const loginUser = getLoginUser();
+  if (!loginUser ||  loginUser.localInit) {
     createLoginWindow(createWindow);
     return;
   }
@@ -123,7 +137,7 @@ app.whenReady().then(() => {
       customLog('process-dir err:', err)
     }
 
-  
+
   })
 
   ipcMain.on('save-products', (_event, data) => {
@@ -158,12 +172,12 @@ app.whenReady().then(() => {
 
   //获取产品名配置
   ipcMain.handle('get-products', () => {
-    return apiConfig.products
+    return apiConfig.getProducts();
   })
 
   //通用配置
   ipcMain.handle('get-general', () => {
-    return apiConfig.general;
+    return apiConfig.getGeneral();
   })
 
 

@@ -1,8 +1,10 @@
 const fetch = require('node-fetch');
 
 const EnvId = 'lowcode-2gexp0oub13a679d'; // 环境 ID，例如 lowcode-2gay8jgh25
-const SecretId = 'AKIDVw96o7jVbRDn9EnEQJwRijZDdrkNABJC';
-const SecretKey = 'sX0B6tVpunaAUiwxiFb7NNBn9F5g49yX';
+const apiConfig = require('../apiConfig');
+
+
+
 
 
 // 域名
@@ -16,11 +18,13 @@ let TOKEN = '';
 async function getAccessToken() {
 
     if (TOKEN != '') { return TOKEN; }
+    
+    const conf = apiConfig.getClientConfig();
     const tokenResponse = await fetch(`${domain}/auth/v1/token/clientCredential`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Basic ${Buffer.from(`${SecretId}:${SecretKey}`).toString('base64')}`
+            "Authorization": `Basic ${Buffer.from(`${conf.credential.secretId}:${conf.credential.secretKey}`).toString('base64')}`
         },
         body: JSON.stringify({
             grant_type: 'client_credentials',
@@ -59,9 +63,11 @@ const weda = {
     }
 }
 
-    module.exports = weda;
+module.exports = weda;
 
-    
+
 //weda.find("name eq 'admin'");
-// weda.find("yhbs eq '"+'index'+"'",'dlyhb_pc7zmvv');
+//weda.find("yhbs eq '"+'index'+"'",'dlyhb_pc7zmvv');
+
+
 
